@@ -1,0 +1,130 @@
+{
+  "evidence_id": "ev_696f880dd3aaf7b8be1465204d1197f7bb777066ff4819a82ff76a66bfe3a4ad",
+  "subject": {
+    "name": "Scribble & Guess.apk",
+    "digest": {
+      "sha256": "3022cadd35ab19b6715cc2ea62f765205d513b1c8692b660b57646f5535c78ff"
+    },
+    "local_path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "format": "apk",
+    "architecture": null
+  },
+  "provider": {
+    "id": "jadx",
+    "name": "JADX headless",
+    "version": "0.7.1"
+  },
+  "analysis_profile": null,
+  "predicate_type": "rea.analysis",
+  "operation": "inspect_android_method",
+  "parameters": {
+    "path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "class_name": "lg.h",
+    "method_name": "onConsoleMessage"
+  },
+  "raw_result": {
+    "server": {
+      "name": "rea-jadx-bridge",
+      "version": "4"
+    },
+    "bridge_sha256": "a02b1ef0a4a40abd1ae310b9ee686ca163e0b59a3256df524c35b90ed17e9e63",
+    "jar_sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+    "loaded": {
+      "state": "LOADED",
+      "apk_path": "C:\\Users\\vyasg\\AppData\\Local\\Temp\\rea-android-64d5c99f42c6bc31b77de36edfc03f46\\target.apk",
+      "class_count": 17541,
+      "resource_count": 740,
+      "threads": 1,
+      "resources": "full"
+    },
+    "calls": [
+      {
+        "operation": "rea_jvm_status",
+        "input": {},
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"java_version\":\"21.0.13\",\"available_processors\":22,\"engine_reported_version\":\"0.7.1\",\"metadata_scope\":\"parsed_members\",\"max_heap_bytes\":8438939648}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "get_class_summary",
+        "input": {
+          "class_name": "lg.h"
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"inner_class_count\":0,\"inner_classes\":[],\"name\":\"h\",\"full_name\":\"lg.h\",\"field_count\":12,\"fields\":[{\"def_pos\":0,\"name\":\"f31978l\",\"type\":\"int\"},{\"def_pos\":0,\"name\":\"f31979a\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"f31980b\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"f31981c\",\"type\":\"java.lang.Object\"},{\"def_pos\":0,\"name\":\"f31982d\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"f31983e\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"f31984f\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"f31985g\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"f31986i\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"f31987j\",\"type\":\"com.rahuls.scribbleio.ui.screens.main.CustomWebView\"},{\"def_pos\":0,\"name\":\"h\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"k\",\"type\":\"android.webkit.WebView\"}],\"methods\":[{\"name\":\"\\u003cinit\\u003e\",\"is_constructor\":true,\"dex_descriptor\":\"(Lcom/rahuls/scribbleio/ui/screens/main/CustomWebView;Landroid/webkit/WebView;)V\",\"signature\":\"\\u003cinit\\u003e(com.rahuls.scribbleio.ui.screens.main.CustomWebView, android.webkit.WebView): void\",\"def_pos\":0},{\"name\":\"onConsoleMessage\",\"is_constructor\":false,\"dex_descriptor\":\"(Landroid/webkit/ConsoleMessage;)Z\",\"signature\":\"onConsoleMessage(android.webkit.ConsoleMessage): boolean\",\"def_pos\":0}],\"method_count\":2}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "get_method_body",
+        "input": {
+          "class_name": "lg.h",
+          "method_name": "onConsoleMessage",
+          "overload_index": 0,
+          "smali_fallback": true
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"full_name\":\"lg.h.onConsoleMessage\",\"overload_index\":0,\"method_name\":\"onConsoleMessage\",\"overload_count\":1,\"dex_descriptor\":\"(Landroid/webkit/ConsoleMessage;)Z\",\"class_name\":\"lg.h\",\"mode\":\"java\",\"body\":\"    @Override // android.webkit.WebChromeClient\\r\\n    public final boolean onConsoleMessage(ConsoleMessage consoleMessage) {\\r\\n        WebView webView \\u003d this.k;\\r\\n        String url \\u003d webView.getUrl();\\r\\n        String str \\u003d this.f31984f;\\r\\n        String str2 \\u003d this.f31983e;\\r\\n        String str3 \\u003d this.f31982d;\\r\\n        Object obj \\u003d this.f31981c;\\r\\n        String str4 \\u003d this.f31980b;\\r\\n        final CustomWebView customWebView \\u003d this.f31987j;\\r\\n        String str5 \\u003d this.f31979a;\\r\\n        if (url \\u003d\\u003d null || !ip.m.o0(url, \\\"skribbl.io\\\", false)) {\\r\\n            String str6 \\u003d \\\"\\u0027);\\\\n                                            localStorage.setItem(\\u0027pressure\\u0027, \\u0027\\\";\\r\\n            String str7 \\u003d str2;\\r\\n            String url2 \\u003d webView.getUrl();\\r\\n            if (url2 !\\u003d null) {\\r\\n                String str8 \\u003d str6;\\r\\n                if (ip.m.o0(url2, customWebView.f23838z, false)) {\\r\\n                    String strMessage \\u003d consoleMessage !\\u003d null ? consoleMessage.message() : null;\\r\\n                    String str9 \\u003d str7;\\r\\n                    if (strMessage !\\u003d null \\u0026\\u0026 ip.m.o0(strMessage, this.f31985g, false)) {\\r\\n                        final int i10 \\u003d 1;\\r\\n                        webView.evaluateJavascript(this.h, new ValueCallback() { // from class: lg.f\\r\\n                            @Override // android.webkit.ValueCallback\\r\\n                            public final void onReceiveValue(Object obj2) {\\r\\n                                String str10 \\u003d (String) obj2;\\r\\n                                switch (i10) {\\r\\n                                    case 0:\\r\\n                                        kotlin.jvm.internal.k.b(str10);\\r\\n                                        String input \\u003d ip.m.T0(str10).toString();\\r\\n                                        Pattern patternCompile \\u003d Pattern.compile(\\\"^\\\\\\\"|\\\\\\\"$\\\");\\r\\n                                        kotlin.jvm.internal.k.d(patternCompile, \\\"compile(...)\\\");\\r\\n                                        kotlin.jvm.internal.k.e(input, \\\"input\\\");\\r\\n                                        String strReplaceAll \\u003d patternCompile.matcher(input).replaceAll(\\\"\\\");\\r\\n                                        kotlin.jvm.internal.k.d(strReplaceAll, \\\"replaceAll(...)\\\");\\r\\n                                        tm.a.T(customWebView, strReplaceAll);\\r\\n                                        break;\\r\\n                                    default:\\r\\n                                        kotlin.jvm.internal.k.b(str10);\\r\\n                                        String input2 \\u003d ip.m.T0(str10).toString();\\r\\n                                        Pattern patternCompile2 \\u003d Pattern.compile(\\\"^\\\\\\\"|\\\\\\\"$\\\");\\r\\n                                        kotlin.jvm.internal.k.d(patternCompile2, \\\"compile(...)\\\");\\r\\n                                        kotlin.jvm.internal.k.e(input2, \\\"input\\\");\\r\\n                                        String strReplaceAll2 \\u003d patternCompile2.matcher(input2).replaceAll(\\\"\\\");\\r\\n                                        kotlin.jvm.internal.k.d(strReplaceAll2, \\\"replaceAll(...)\\\");\\r\\n                                        tm.a.T(customWebView, strReplaceAll2);\\r\\n                                        break;\\r\\n                                }\\r\\n                            }\\r\\n                        });\\r\\n                    } else if (strMessage !\\u003d null \\u0026\\u0026 ip.m.o0(strMessage, this.f31986i, false)) {\\r\\n                        StringBuilder sbP \\u003d d0.p(\\\"\\\\n                                        if (localStorageAvailable) {\\\\n                                            localStorage.setItem(\\u0027keyboard\\u0027, \\u0027\\\", str4, \\\"\\u0027);\\\\n                                            localStorage.setItem(\\u0027displaylang\\u0027, \\u0027\\\", str5, \\\"\\u0027);\\\\n                                            localStorage.setItem(\\u0027keyboardlayout\\u0027, \\u0027\\\");\\r\\n                        sbP.append(str5);\\r\\n                        sbP.append(\\\"\\u0027);\\\\n                                            localStorage.setItem(\\u0027lang\\u0027, \\u0027\\\");\\r\\n                        sbP.append(obj);\\r\\n                        sbP.append(\\\"\\u0027);\\\\n                                            localStorage.setItem(\\u0027chatBubbles\\u0027, \\u0027\\\");\\r\\n                        ga.i.t(sbP, str3, \\\"\\u0027);\\\\n                                            localStorage.setItem(\\u0027mobileChatLayout\\u0027, \\u0027\\\", str9, str8);\\r\\n                        webView.evaluateJavascript(n0.r(sbP, str, \\\"\\u0027);\\\\n                                        }\\\\n                                    \\\"), new g());\\r\\n                    }\\r\\n                }\\r\\n            }\\r\\n            return super.onConsoleMessage(consoleMessage);\\r\\n        }\\r\\n        String strMessage2 \\u003d consoleMessage !\\u003d null ? consoleMessage.message() : null;\\r\\n        if (strMessage2 !\\u003d null \\u0026\\u0026 ip.m.o0(strMessage2, \\\"Async: Could not copy text:\\\", false)) {\\r\\n            final int i11 \\u003d 0;\\r\\n            webView.evaluateJavascript(\\\"document.querySelector(\\u0027#input-invite\\u0027).value\\\", new ValueCallback() { // from class: lg.f\\r\\n                @Override // android.webkit.ValueCallback\\r\\n                public final void onReceiveValue(Object obj2) {\\r\\n                    String str10 \\u003d (String) obj2;\\r\\n                    switch (i11) {\\r\\n                        case 0:\\r\\n                            kotlin.jvm.internal.k.b(str10);\\r\\n                            String input \\u003d ip.m.T0(str10).toString();\\r\\n                            Pattern patternCompile \\u003d Pattern.compile(\\\"^\\\\\\\"|\\\\\\\"$\\\");\\r\\n                            kotlin.jvm.internal.k.d(patternCompile, \\\"compile(...)\\\");\\r\\n                            kotlin.jvm.internal.k.e(input, \\\"input\\\");\\r\\n                            String strReplaceAll \\u003d patternCompile.matcher(input).replaceAll(\\\"\\\");\\r\\n                            kotlin.jvm.internal.k.d(strReplaceAll, \\\"replaceAll(...)\\\");\\r\\n                            tm.a.T(customWebView, strReplaceAll);\\r\\n                            break;\\r\\n                        default:\\r\\n                            kotlin.jvm.internal.k.b(str10);\\r\\n                            String input2 \\u003d ip.m.T0(str10).toString();\\r\\n                            Pattern patternCompile2 \\u003d Pattern.compile(\\\"^\\\\\\\"|\\\\\\\"$\\\");\\r\\n                            kotlin.jvm.internal.k.d(patternCompile2, \\\"compile(...)\\\");\\r\\n                            kotlin.jvm.internal.k.e(input2, \\\"input\\\");\\r\\n                            String strReplaceAll2 \\u003d patternCompile2.matcher(input2).replaceAll(\\\"\\\");\\r\\n                            kotlin.jvm.internal.k.d(strReplaceAll2, \\\"replaceAll(...)\\\");\\r\\n                            tm.a.T(customWebView, strReplaceAll2);\\r\\n                            break;\\r\\n                    }\\r\\n                }\\r\\n            });\\r\\n        } else if (strMessage2 !\\u003d null \\u0026\\u0026 ip.m.o0(strMessage2, \\\"loaded\\\", false)) {\\r\\n            StringBuilder sbP2 \\u003d d0.p(\\\"\\\\n                                        if (localStorageAvailable) {\\\\n                                            localStorage.setItem(\\u0027keyboard\\u0027, \\u0027\\\", str4, \\\"\\u0027);\\\\n                                            localStorage.setItem(\\u0027displaylang\\u0027, \\u0027\\\", str5, \\\"\\u0027);\\\\n                                            localStorage.setItem(\\u0027keyboardlayout\\u0027, \\u0027\\\");\\r\\n            sbP2.append(str5);\\r\\n            sbP2.append(\\\"\\u0027);\\\\n                                            localStorage.setItem(\\u0027lang\\u0027, \\u0027\\\");\\r\\n            sbP2.append(obj);\\r\\n            sbP2.append(\\\"\\u0027);\\\\n                                            localStorage.setItem(\\u0027chatBubbles\\u0027, \\u0027\\\");\\r\\n            ga.i.t(sbP2, str3, \\\"\\u0027);\\\\n                                            localStorage.setItem(\\u0027mobileChatLayout\\u0027, \\u0027\\\", str2, \\\"\\u0027);\\\\n                                            localStorage.setItem(\\u0027pressure\\u0027, \\u0027\\\");\\r\\n            webView.evaluateJavascript(n0.r(sbP2, str, \\\"\\u0027);\\\\n                                        }\\\\n                                    \\\"), new g());\\r\\n        }\\r\\n        return super.onConsoleMessage(consoleMessage);\\r\\n    }\",\"markers\":[],\"fell_back\":false}"
+            }
+          ],
+          "isError": false
+        }
+      }
+    ]
+  },
+  "normalized_result": {
+    "engine": {
+      "name": "jadx-headless-mcp",
+      "version": "0.7.1",
+      "artifact_sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+      "source_revision": "5844800a486d2248fa949b74c9896285f5b54de2",
+      "worker_count": 1,
+      "heap_limit_mib": 8048
+    },
+    "class_name": "lg.h",
+    "method": {
+      "name": "onConsoleMessage",
+      "reported_signature": "onConsoleMessage(android.webkit.ConsoleMessage): boolean",
+      "overload_index": 0,
+      "is_constructor": false,
+      "dex_descriptor": "(Landroid/webkit/ConsoleMessage;)Z"
+    },
+    "overload_count": 1,
+    "representation": "java",
+    "body_status": "available",
+    "fell_back": false,
+    "markers": [],
+    "source": {
+      "status": "complete",
+      "text": "    @Override // android.webkit.WebChromeClient\r\n    public final boolean onConsoleMessage(ConsoleMessage consoleMessage) {\r\n        WebView webView = this.k;\r\n        String url = webView.getUrl();\r\n        String str = this.f31984f;\r\n        String str2 = this.f31983e;\r\n        String str3 = this.f31982d;\r\n        Object obj = this.f31981c;\r\n        String str4 = this.f31980b;\r\n        final CustomWebView customWebView = this.f31987j;\r\n        String str5 = this.f31979a;\r\n        if (url == null || !ip.m.o0(url, \"skribbl.io\", false)) {\r\n            String str6 = \"');\\n                                            localStorage.setItem('pressure', '\";\r\n            String str7 = str2;\r\n            String url2 = webView.getUrl();\r\n            if (url2 != null) {\r\n                String str8 = str6;\r\n                if (ip.m.o0(url2, customWebView.f23838z, false)) {\r\n                    String strMessage = consoleMessage != null ? consoleMessage.message() : null;\r\n                    String str9 = str7;\r\n                    if (strMessage != null && ip.m.o0(strMessage, this.f31985g, false)) {\r\n                        final int i10 = 1;\r\n                        webView.evaluateJavascript(this.h, new ValueCallback() { // from class: lg.f\r\n                            @Override // android.webkit.ValueCallback\r\n                            public final void onReceiveValue(Object obj2) {\r\n                                String str10 = (String) obj2;\r\n                                switch (i10) {\r\n                                    case 0:\r\n                                        kotlin.jvm.internal.k.b(str10);\r\n                                        String input = ip.m.T0(str10).toString();\r\n                                        Pattern patternCompile = Pattern.compile(\"^\\\"|\\\"$\");\r\n                                        kotlin.jvm.internal.k.d(patternCompile, \"compile(...)\");\r\n                                        kotlin.jvm.internal.k.e(input, \"input\");\r\n                                        String strReplaceAll = patternCompile.matcher(input).replaceAll(\"\");\r\n                                        kotlin.jvm.internal.k.d(strReplaceAll, \"replaceAll(...)\");\r\n                                        tm.a.T(customWebView, strReplaceAll);\r\n                                        break;\r\n                                    default:\r\n                                        kotlin.jvm.internal.k.b(str10);\r\n                                        String input2 = ip.m.T0(str10).toString();\r\n                                        Pattern patternCompile2 = Pattern.compile(\"^\\\"|\\\"$\");\r\n                                        kotlin.jvm.internal.k.d(patternCompile2, \"compile(...)\");\r\n                                        kotlin.jvm.internal.k.e(input2, \"input\");\r\n                                        String strReplaceAll2 = patternCompile2.matcher(input2).replaceAll(\"\");\r\n                                        kotlin.jvm.internal.k.d(strReplaceAll2, \"replaceAll(...)\");\r\n                                        tm.a.T(customWebView, strReplaceAll2);\r\n                                        break;\r\n                                }\r\n                            }\r\n                        });\r\n                    } else if (strMessage != null && ip.m.o0(strMessage, this.f31986i, false)) {\r\n                        StringBuilder sbP = d0.p(\"\\n                                        if (localStorageAvailable) {\\n                                            localStorage.setItem('keyboard', '\", str4, \"');\\n                                            localStorage.setItem('displaylang', '\", str5, \"');\\n                                            localStorage.setItem('keyboardlayout', '\");\r\n                        sbP.append(str5);\r\n                        sbP.append(\"');\\n                                            localStorage.setItem('lang', '\");\r\n                        sbP.append(obj);\r\n                        sbP.append(\"');\\n                                            localStorage.setItem('chatBubbles', '\");\r\n                        ga.i.t(sbP, str3, \"');\\n                                            localStorage.setItem('mobileChatLayout', '\", str9, str8);\r\n                        webView.evaluateJavascript(n0.r(sbP, str, \"');\\n                                        }\\n                                    \"), new g());\r\n                    }\r\n                }\r\n            }\r\n            return super.onConsoleMessage(consoleMessage);\r\n        }\r\n        String strMessage2 = consoleMessage != null ? consoleMessage.message() : null;\r\n        if (strMessage2 != null && ip.m.o0(strMessage2, \"Async: Could not copy text:\", false)) {\r\n            final int i11 = 0;\r\n            webView.evaluateJavascript(\"document.querySelector('#input-invite').value\", new ValueCallback() { // from class: lg.f\r\n                @Override // android.webkit.ValueCallback\r\n                public final void onReceiveValue(Object obj2) {\r\n                    String str10 = (String) obj2;\r\n                    switch (i11) {\r\n                        case 0:\r\n                            kotlin.jvm.internal.k.b(str10);\r\n                            String input = ip.m.T0(str10).toString();\r\n                            Pattern patternCompile = Pattern.compile(\"^\\\"|\\\"$\");\r\n                            kotlin.jvm.internal.k.d(patternCompile, \"compile(...)\");\r\n                            kotlin.jvm.internal.k.e(input, \"input\");\r\n                            String strReplaceAll = patternCompile.matcher(input).replaceAll(\"\");\r\n                            kotlin.jvm.internal.k.d(strReplaceAll, \"replaceAll(...)\");\r\n                            tm.a.T(customWebView, strReplaceAll);\r\n                            break;\r\n                        default:\r\n                            kotlin.jvm.internal.k.b(str10);\r\n                            String input2 = ip.m.T0(str10).toString();\r\n                            Pattern patternCompile2 = Pattern.compile(\"^\\\"|\\\"$\");\r\n                            kotlin.jvm.internal.k.d(patternCompile2, \"compile(...)\");\r\n                            kotlin.jvm.internal.k.e(input2, \"input\");\r\n                            String strReplaceAll2 = patternCompile2.matcher(input2).replaceAll(\"\");\r\n                            kotlin.jvm.internal.k.d(strReplaceAll2, \"replaceAll(...)\");\r\n                            tm.a.T(customWebView, strReplaceAll2);\r\n                            break;\r\n                    }\r\n                }\r\n            });\r\n        } else if (strMessage2 != null && ip.m.o0(strMessage2, \"loaded\", false)) {\r\n            StringBuilder sbP2 = d0.p(\"\\n                                        if (localStorageAvailable) {\\n                                            localStorage.setItem('keyboard', '\", str4, \"');\\n                                            localStorage.setItem('displaylang', '\", str5, \"');\\n                                            localStorage.setItem('keyboardlayout', '\");\r\n            sbP2.append(str5);\r\n            sbP2.append(\"');\\n                                            localStorage.setItem('lang', '\");\r\n            sbP2.append(obj);\r\n            sbP2.append(\"');\\n                                            localStorage.setItem('chatBubbles', '\");\r\n            ga.i.t(sbP2, str3, \"');\\n                                            localStorage.setItem('mobileChatLayout', '\", str2, \"');\\n                                            localStorage.setItem('pressure', '\");\r\n            webView.evaluateJavascript(n0.r(sbP2, str, \"');\\n                                        }\\n                                    \"), new g());\r\n        }\r\n        return super.onConsoleMessage(consoleMessage);\r\n    }",
+      "reported_total_bytes": null
+    }
+  },
+  "confidence": "derived",
+  "authority": "shipped-artifact",
+  "environment": null,
+  "limitations": [
+    "Static decompiler observations do not establish runtime behavior; the APK is never executed.",
+    "Method signatures use provider display types; DEX prototypes come from frozen JADX metadata. Display names may be aliases, and overload indices are local to this engine and artifact.",
+    "Class inventories use parsed metadata before code generation, including synthetic members that may be omitted from decompiled source. Source positions remain unknown.",
+    "Incoming reference totals count JADX using nodes. Direct invoke entries within a using method report raw DEX code-unit offsets and method indexes, but coverage is limited to those nodes and directly matched invokes; it does not establish every possible dynamic or reflective call site.",
+    "Manifest summary fields are extracted by the upstream engine; decoded XML is retained for verification. APK signatures, split APKs, native libraries and Android runtime capture are not verified by this provider."
+  ],
+  "relationship_coverage": null,
+  "locations": [],
+  "evidence_links": []
+}

@@ -1,0 +1,22 @@
+{
+  "source_apk_sha256": "3022cadd35ab19b6715cc2ea62f765205d513b1c8692b660b57646f5535c78ff",
+  "archive_entry": "res/xml/remote_config_defaults.xml",
+  "entry_sha256": "f888503878ce9fb8701cf7e356eea8907c1e6bcb4162ba7a46c51aa59ded1fdc",
+  "method": "Python standard-library decoding of Android binary XML string-pool and element/text chunks; zero-attribute structure and complete balanced tree asserted. Values are APK defaults, not fetched Remote Config.",
+  "entry_count": 40,
+  "selected_values": {
+    "mobile_chat_bubbles": "0",
+    "mobile_chat_input_layout": "bottom",
+    "brush_pressure_sensitivity": "1",
+    "web_view_console_copy_command": "document.querySelector('#input-invite').value",
+    "web_view_console_copy": "Async: Could not copy text:",
+    "mobile_keyboard_enabled": "0",
+    "web_view_host": "skribbl.io",
+    "supported_language_code_map": "{\"en\":\"0\",\"de\":\"1\",\"it\":\"12\",\"sr\":\"22\"}",
+    "web_view_console_init": "loaded",
+    "web_view_url": "https://skribbl.io/",
+    "web_view_game_name": "Scribble.io",
+    "disable_web_view_navigation": "false",
+    "web_view_enable_ads": "false"
+  }
+}

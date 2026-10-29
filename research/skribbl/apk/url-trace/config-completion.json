@@ -1,0 +1,130 @@
+{
+  "evidence_id": "ev_2725fdf6842bf91b333546fa290d45cf751cd487c999c1fa53767d870d054e3b",
+  "subject": {
+    "name": "Scribble & Guess.apk",
+    "digest": {
+      "sha256": "3022cadd35ab19b6715cc2ea62f765205d513b1c8692b660b57646f5535c78ff"
+    },
+    "local_path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "format": "apk",
+    "architecture": null
+  },
+  "provider": {
+    "id": "jadx",
+    "name": "JADX headless",
+    "version": "0.7.1"
+  },
+  "analysis_profile": null,
+  "predicate_type": "rea.analysis",
+  "operation": "inspect_android_method",
+  "parameters": {
+    "path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "class_name": "a6.e",
+    "method_name": "onComplete"
+  },
+  "raw_result": {
+    "server": {
+      "name": "rea-jadx-bridge",
+      "version": "4"
+    },
+    "bridge_sha256": "a02b1ef0a4a40abd1ae310b9ee686ca163e0b59a3256df524c35b90ed17e9e63",
+    "jar_sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+    "loaded": {
+      "state": "LOADED",
+      "apk_path": "C:\\Users\\vyasg\\AppData\\Local\\Temp\\rea-android-64d5c99f42c6bc31b77de36edfc03f46\\target.apk",
+      "class_count": 17541,
+      "resource_count": 740,
+      "threads": 1,
+      "resources": "full"
+    },
+    "calls": [
+      {
+        "operation": "rea_jvm_status",
+        "input": {},
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"java_version\":\"21.0.13\",\"available_processors\":22,\"engine_reported_version\":\"0.7.1\",\"metadata_scope\":\"parsed_members\",\"max_heap_bytes\":8438939648}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "get_class_summary",
+        "input": {
+          "class_name": "a6.e"
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"inner_class_count\":0,\"inner_classes\":[],\"name\":\"e\",\"full_name\":\"a6.e\",\"field_count\":2,\"fields\":[{\"def_pos\":0,\"name\":\"f193a\",\"type\":\"int\"},{\"def_pos\":0,\"name\":\"f194b\",\"type\":\"java.lang.Object\"}],\"methods\":[{\"name\":\"\\u003cinit\\u003e\",\"is_constructor\":true,\"dex_descriptor\":\"(ILjava/lang/Object;)V\",\"signature\":\"\\u003cinit\\u003e(int, java.lang.Object): void\",\"def_pos\":0},{\"name\":\"\\u003cinit\\u003e\",\"is_constructor\":true,\"dex_descriptor\":\"(La6/a;Ljava/lang/Object;I)V\",\"signature\":\"\\u003cinit\\u003e(a6.a, java.lang.Object, int): void\",\"def_pos\":0},{\"name\":\"\\u003cinit\\u003e\",\"is_constructor\":true,\"dex_descriptor\":\"(La6/a;Ljava/lang/Object;J)V\",\"signature\":\"\\u003cinit\\u003e(a6.a, java.lang.Object, long): void\",\"def_pos\":0},{\"name\":\"G\",\"is_constructor\":false,\"dex_descriptor\":\"(Lcom/google/android/gms/tasks/Task;)Ljava/lang/Object;\",\"signature\":\"G(com.google.android.gms.tasks.Task): java.lang.Object\",\"def_pos\":0},{\"name\":\"a\",\"is_constructor\":false,\"dex_descriptor\":\"(Ljava/lang/Object;)V\",\"signature\":\"a(java.lang.Object): void\",\"def_pos\":0},{\"name\":\"accept\",\"is_constructor\":false,\"dex_descriptor\":\"(Ljava/lang/Object;)V\",\"signature\":\"accept(java.lang.Object): void\",\"def_pos\":0},{\"name\":\"apply\",\"is_constructor\":false,\"dex_descriptor\":\"(Ljava/lang/Object;)Ljava/lang/Object;\",\"signature\":\"apply(java.lang.Object): java.lang.Object\",\"def_pos\":0},{\"name\":\"b\",\"is_constructor\":false,\"dex_descriptor\":\"(Ljava/lang/Object;)I\",\"signature\":\"b(java.lang.Object): int\",\"def_pos\":0},{\"name\":\"c\",\"is_constructor\":false,\"dex_descriptor\":\"(ILq5/q0;[I)Lye/r0;\",\"signature\":\"c(int, q5.q0, int[]): ye.r0\",\"def_pos\":0},{\"name\":\"d\",\"is_constructor\":false,\"dex_descriptor\":\"()Ljava/lang/Object;\",\"signature\":\"d(): java.lang.Object\",\"def_pos\":0},{\"name\":\"e\",\"is_constructor\":false,\"dex_descriptor\":\"()V\",\"signature\":\"e(): void\",\"def_pos\":0},{\"name\":\"handle\",\"is_constructor\":false,\"dex_descriptor\":\"(Lcom/google/firebase/inject/Provider;)V\",\"signature\":\"handle(com.google.firebase.inject.Provider): void\",\"def_pos\":0},{\"name\":\"i\",\"is_constructor\":false,\"dex_descriptor\":\"(Landroidx/concurrent/futures/k;)Ljava/lang/Object;\",\"signature\":\"i(androidx.concurrent.futures.k): java.lang.Object\",\"def_pos\":0},{\"name\":\"invoke\",\"is_constructor\":false,\"dex_descriptor\":\"(Ljava/lang/Object;)V\",\"signature\":\"invoke(java.lang.Object): void\",\"def_pos\":0},{\"name\":\"o\",\"is_constructor\":false,\"dex_descriptor\":\"(Lej/b;)V\",\"signature\":\"o(ej.b): void\",\"def_pos\":0},{\"name\":\"onCancel\",\"is_constructor\":false,\"dex_descriptor\":\"()V\",\"signature\":\"onCancel(): void\",\"def_pos\":0},{\"name\":\"onComplete\",\"is_constructor\":false,\"dex_descriptor\":\"(Lcom/google/android/gms/tasks/Task;)V\",\"signature\":\"onComplete(com.google.android.gms.tasks.Task): void\",\"def_pos\":0},{\"name\":\"then\",\"is_constructor\":false,\"dex_descriptor\":\"(Ljava/lang/Object;)Lcom/google/android/gms/tasks/Task;\",\"signature\":\"then(java.lang.Object): com.google.android.gms.tasks.Task\",\"def_pos\":0}],\"method_count\":18}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "get_method_body",
+        "input": {
+          "class_name": "a6.e",
+          "method_name": "onComplete",
+          "overload_index": 0,
+          "smali_fallback": true
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"full_name\":\"a6.e.onComplete\",\"overload_index\":0,\"method_name\":\"onComplete\",\"overload_count\":1,\"dex_descriptor\":\"(Lcom/google/android/gms/tasks/Task;)V\",\"class_name\":\"a6.e\",\"mode\":\"java\",\"body\":\"    @Override // com.google.android.gms.tasks.OnCompleteListener\\r\\n    public void onComplete(Task task) {\\r\\n        FirebaseRemoteConfig firebaseRemoteConfig \\u003d (FirebaseRemoteConfig) this.f194b;\\r\\n        kotlin.jvm.internal.k.e(task, \\\"task\\\");\\r\\n        if (task.o()) {\\r\\n            Boolean bool \\u003d (Boolean) task.k();\\r\\n            jr.a.f30796a.q(\\\"RemoteConfig params updated: \\\" + bool, new Object[0]);\\r\\n        } else {\\r\\n            jr.a.f30796a.q(\\\"RemoteConfig params update: failed\\\", new Object[0]);\\r\\n        }\\r\\n        Map\\u003cString, FirebaseRemoteConfigValue\\u003e all \\u003d firebaseRemoteConfig.getAll();\\r\\n        kotlin.jvm.internal.k.d(all, \\\"getAll(...)\\\");\\r\\n        hf.m mVar \\u003d new hf.m();\\r\\n        Class\\u003c?\\u003e cls \\u003d all.getClass();\\r\\n        StringBuilder sb2 \\u003d new StringBuilder();\\r\\n        try {\\r\\n            qf.b bVar \\u003d new qf.b(new ev(sb2, 2));\\r\\n            bVar.l(mVar.f27491g);\\r\\n            bVar.f35587i \\u003d mVar.f27490f;\\r\\n            bVar.m(2);\\r\\n            bVar.k \\u003d false;\\r\\n            mVar.d(all, cls, bVar);\\r\\n            String string \\u003d sb2.toString();\\r\\n            kotlin.jvm.internal.k.d(string, \\\"toJson(...)\\\");\\r\\n            dg.a aVar \\u003d bg.f.f2539a;\\r\\n            if (aVar \\u003d\\u003d null) {\\r\\n                kotlin.jvm.internal.k.l(\\\"prefs\\\");\\r\\n                throw null;\\r\\n            }\\r\\n            SharedPreferences.Editor editorEdit \\u003d aVar.f24190a.edit();\\r\\n            editorEdit.putString(\\\"key_app_config\\\", string);\\r\\n            editorEdit.apply();\\r\\n        } catch (IOException e10) {\\r\\n            throw new hf.p(e10);\\r\\n        }\\r\\n    }\",\"markers\":[],\"fell_back\":false}"
+            }
+          ],
+          "isError": false
+        }
+      }
+    ]
+  },
+  "normalized_result": {
+    "engine": {
+      "name": "jadx-headless-mcp",
+      "version": "0.7.1",
+      "artifact_sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+      "source_revision": "5844800a486d2248fa949b74c9896285f5b54de2",
+      "worker_count": 1,
+      "heap_limit_mib": 8048
+    },
+    "class_name": "a6.e",
+    "method": {
+      "name": "onComplete",
+      "reported_signature": "onComplete(com.google.android.gms.tasks.Task): void",
+      "overload_index": 0,
+      "is_constructor": false,
+      "dex_descriptor": "(Lcom/google/android/gms/tasks/Task;)V"
+    },
+    "overload_count": 1,
+    "representation": "java",
+    "body_status": "available",
+    "fell_back": false,
+    "markers": [],
+    "source": {
+      "status": "complete",
+      "text": "    @Override // com.google.android.gms.tasks.OnCompleteListener\r\n    public void onComplete(Task task) {\r\n        FirebaseRemoteConfig firebaseRemoteConfig = (FirebaseRemoteConfig) this.f194b;\r\n        kotlin.jvm.internal.k.e(task, \"task\");\r\n        if (task.o()) {\r\n            Boolean bool = (Boolean) task.k();\r\n            jr.a.f30796a.q(\"RemoteConfig params updated: \" + bool, new Object[0]);\r\n        } else {\r\n            jr.a.f30796a.q(\"RemoteConfig params update: failed\", new Object[0]);\r\n        }\r\n        Map<String, FirebaseRemoteConfigValue> all = firebaseRemoteConfig.getAll();\r\n        kotlin.jvm.internal.k.d(all, \"getAll(...)\");\r\n        hf.m mVar = new hf.m();\r\n        Class<?> cls = all.getClass();\r\n        StringBuilder sb2 = new StringBuilder();\r\n        try {\r\n            qf.b bVar = new qf.b(new ev(sb2, 2));\r\n            bVar.l(mVar.f27491g);\r\n            bVar.f35587i = mVar.f27490f;\r\n            bVar.m(2);\r\n            bVar.k = false;\r\n            mVar.d(all, cls, bVar);\r\n            String string = sb2.toString();\r\n            kotlin.jvm.internal.k.d(string, \"toJson(...)\");\r\n            dg.a aVar = bg.f.f2539a;\r\n            if (aVar == null) {\r\n                kotlin.jvm.internal.k.l(\"prefs\");\r\n                throw null;\r\n            }\r\n            SharedPreferences.Editor editorEdit = aVar.f24190a.edit();\r\n            editorEdit.putString(\"key_app_config\", string);\r\n            editorEdit.apply();\r\n        } catch (IOException e10) {\r\n            throw new hf.p(e10);\r\n        }\r\n    }",
+      "reported_total_bytes": null
+    }
+  },
+  "confidence": "derived",
+  "authority": "shipped-artifact",
+  "environment": null,
+  "limitations": [
+    "Static decompiler observations do not establish runtime behavior; the APK is never executed.",
+    "Method signatures use provider display types; DEX prototypes come from frozen JADX metadata. Display names may be aliases, and overload indices are local to this engine and artifact.",
+    "Class inventories use parsed metadata before code generation, including synthetic members that may be omitted from decompiled source. Source positions remain unknown.",
+    "Incoming reference totals count JADX using nodes. Direct invoke entries within a using method report raw DEX code-unit offsets and method indexes, but coverage is limited to those nodes and directly matched invokes; it does not establish every possible dynamic or reflective call site.",
+    "Manifest summary fields are extracted by the upstream engine; decoded XML is retained for verification. APK signatures, split APKs, native libraries and Android runtime capture are not verified by this provider."
+  ],
+  "relationship_coverage": null,
+  "locations": [],
+  "evidence_links": []
+}

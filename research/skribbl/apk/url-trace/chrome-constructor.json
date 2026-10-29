@@ -1,0 +1,130 @@
+{
+  "evidence_id": "ev_2e789114f686c151d51d99c4d73f5a6a264f161cae4ed319f6e6834daaa6acfa",
+  "subject": {
+    "name": "Scribble & Guess.apk",
+    "digest": {
+      "sha256": "3022cadd35ab19b6715cc2ea62f765205d513b1c8692b660b57646f5535c78ff"
+    },
+    "local_path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "format": "apk",
+    "architecture": null
+  },
+  "provider": {
+    "id": "jadx",
+    "name": "JADX headless",
+    "version": "0.7.1"
+  },
+  "analysis_profile": null,
+  "predicate_type": "rea.analysis",
+  "operation": "inspect_android_method",
+  "parameters": {
+    "path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "class_name": "lg.h",
+    "method_name": "<init>"
+  },
+  "raw_result": {
+    "server": {
+      "name": "rea-jadx-bridge",
+      "version": "4"
+    },
+    "bridge_sha256": "a02b1ef0a4a40abd1ae310b9ee686ca163e0b59a3256df524c35b90ed17e9e63",
+    "jar_sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+    "loaded": {
+      "state": "LOADED",
+      "apk_path": "C:\\Users\\vyasg\\AppData\\Local\\Temp\\rea-android-64d5c99f42c6bc31b77de36edfc03f46\\target.apk",
+      "class_count": 17541,
+      "resource_count": 740,
+      "threads": 1,
+      "resources": "full"
+    },
+    "calls": [
+      {
+        "operation": "rea_jvm_status",
+        "input": {},
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"java_version\":\"21.0.13\",\"available_processors\":22,\"engine_reported_version\":\"0.7.1\",\"metadata_scope\":\"parsed_members\",\"max_heap_bytes\":8438939648}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "get_class_summary",
+        "input": {
+          "class_name": "lg.h"
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"inner_class_count\":0,\"inner_classes\":[],\"name\":\"h\",\"full_name\":\"lg.h\",\"field_count\":12,\"fields\":[{\"def_pos\":0,\"name\":\"f31978l\",\"type\":\"int\"},{\"def_pos\":0,\"name\":\"f31979a\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"f31980b\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"f31981c\",\"type\":\"java.lang.Object\"},{\"def_pos\":0,\"name\":\"f31982d\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"f31983e\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"f31984f\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"f31985g\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"f31986i\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"f31987j\",\"type\":\"com.rahuls.scribbleio.ui.screens.main.CustomWebView\"},{\"def_pos\":0,\"name\":\"h\",\"type\":\"java.lang.String\"},{\"def_pos\":0,\"name\":\"k\",\"type\":\"android.webkit.WebView\"}],\"methods\":[{\"name\":\"\\u003cinit\\u003e\",\"is_constructor\":true,\"dex_descriptor\":\"(Lcom/rahuls/scribbleio/ui/screens/main/CustomWebView;Landroid/webkit/WebView;)V\",\"signature\":\"\\u003cinit\\u003e(com.rahuls.scribbleio.ui.screens.main.CustomWebView, android.webkit.WebView): void\",\"def_pos\":0},{\"name\":\"onConsoleMessage\",\"is_constructor\":false,\"dex_descriptor\":\"(Landroid/webkit/ConsoleMessage;)Z\",\"signature\":\"onConsoleMessage(android.webkit.ConsoleMessage): boolean\",\"def_pos\":0}],\"method_count\":2}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "get_method_body",
+        "input": {
+          "class_name": "lg.h",
+          "method_name": "<init>",
+          "overload_index": 0,
+          "smali_fallback": true
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"full_name\":\"lg.h.\\u003cinit\\u003e\",\"overload_index\":0,\"method_name\":\"\\u003cinit\\u003e\",\"overload_count\":1,\"dex_descriptor\":\"(Lcom/rahuls/scribbleio/ui/screens/main/CustomWebView;Landroid/webkit/WebView;)V\",\"class_name\":\"lg.h\",\"mode\":\"java\",\"body\":\"    public h(CustomWebView customWebView, WebView webView) {\\r\\n        Map map;\\r\\n        String str;\\r\\n        this.f31987j \\u003d customWebView;\\r\\n        this.k \\u003d webView;\\r\\n        String strB \\u003d tm.a.B(customWebView);\\r\\n        this.f31979a \\u003d strB.equalsIgnoreCase(\\\"de\\\") ? \\\"de\\\" : \\\"en\\\";\\r\\n        String strD \\u003d bg.f.d(\\\"mobile_keyboard_enabled\\\");\\r\\n        strD \\u003d strD.equals(\\\"null\\\") ? null : strD;\\r\\n        this.f31980b \\u003d strD \\u003d\\u003d null ? \\\"0\\\" : strD;\\r\\n        try {\\r\\n            map \\u003d (Map) new hf.m().b(bg.f.d(\\\"supported_language_code_map\\\"), new bg.e().f34555b);\\r\\n        } catch (Exception unused) {\\r\\n            map \\u003d null;\\r\\n        }\\r\\n        this.f31981c \\u003d (map \\u003d\\u003d null || (str \\u003d map.get(strB)) \\u003d\\u003d null) ? \\\"0\\\" : str;\\r\\n        String strD2 \\u003d bg.f.d(\\\"mobile_chat_bubbles\\\");\\r\\n        strD2 \\u003d strD2.equals(\\\"null\\\") ? null : strD2;\\r\\n        this.f31982d \\u003d strD2 !\\u003d null ? strD2 : \\\"0\\\";\\r\\n        String strD3 \\u003d bg.f.d(\\\"mobile_chat_input_layout\\\");\\r\\n        strD3 \\u003d strD3.equals(\\\"null\\\") ? null : strD3;\\r\\n        this.f31983e \\u003d strD3 \\u003d\\u003d null ? \\\"top\\\" : strD3;\\r\\n        String strD4 \\u003d bg.f.d(\\\"brush_pressure_sensitivity\\\");\\r\\n        strD4 \\u003d strD4.equals(\\\"null\\\") ? null : strD4;\\r\\n        this.f31984f \\u003d strD4 \\u003d\\u003d null ? \\\"1\\\" : strD4;\\r\\n        String strD5 \\u003d bg.f.d(\\\"web_view_console_copy\\\");\\r\\n        strD5 \\u003d strD5.equals(\\\"null\\\") ? null : strD5;\\r\\n        this.f31985g \\u003d strD5 \\u003d\\u003d null ? \\\"Async: Could not copy text:\\\" : strD5;\\r\\n        String strD6 \\u003d bg.f.d(\\\"web_view_console_copy_command\\\");\\r\\n        strD6 \\u003d strD6.equals(\\\"null\\\") ? null : strD6;\\r\\n        this.h \\u003d strD6 \\u003d\\u003d null ? \\\"document.querySelector(\\u0027#input-invite\\u0027).value\\\" : strD6;\\r\\n        String strD7 \\u003d bg.f.d(\\\"web_view_console_init\\\");\\r\\n        String str2 \\u003d strD7.equals(\\\"null\\\") ? null : strD7;\\r\\n        this.f31986i \\u003d str2 \\u003d\\u003d null ? \\\"loaded\\\" : str2;\\r\\n    }\",\"markers\":[],\"fell_back\":false}"
+            }
+          ],
+          "isError": false
+        }
+      }
+    ]
+  },
+  "normalized_result": {
+    "engine": {
+      "name": "jadx-headless-mcp",
+      "version": "0.7.1",
+      "artifact_sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+      "source_revision": "5844800a486d2248fa949b74c9896285f5b54de2",
+      "worker_count": 1,
+      "heap_limit_mib": 8048
+    },
+    "class_name": "lg.h",
+    "method": {
+      "name": "<init>",
+      "reported_signature": "<init>(com.rahuls.scribbleio.ui.screens.main.CustomWebView, android.webkit.WebView): void",
+      "overload_index": 0,
+      "is_constructor": true,
+      "dex_descriptor": "(Lcom/rahuls/scribbleio/ui/screens/main/CustomWebView;Landroid/webkit/WebView;)V"
+    },
+    "overload_count": 1,
+    "representation": "java",
+    "body_status": "available",
+    "fell_back": false,
+    "markers": [],
+    "source": {
+      "status": "complete",
+      "text": "    public h(CustomWebView customWebView, WebView webView) {\r\n        Map map;\r\n        String str;\r\n        this.f31987j = customWebView;\r\n        this.k = webView;\r\n        String strB = tm.a.B(customWebView);\r\n        this.f31979a = strB.equalsIgnoreCase(\"de\") ? \"de\" : \"en\";\r\n        String strD = bg.f.d(\"mobile_keyboard_enabled\");\r\n        strD = strD.equals(\"null\") ? null : strD;\r\n        this.f31980b = strD == null ? \"0\" : strD;\r\n        try {\r\n            map = (Map) new hf.m().b(bg.f.d(\"supported_language_code_map\"), new bg.e().f34555b);\r\n        } catch (Exception unused) {\r\n            map = null;\r\n        }\r\n        this.f31981c = (map == null || (str = map.get(strB)) == null) ? \"0\" : str;\r\n        String strD2 = bg.f.d(\"mobile_chat_bubbles\");\r\n        strD2 = strD2.equals(\"null\") ? null : strD2;\r\n        this.f31982d = strD2 != null ? strD2 : \"0\";\r\n        String strD3 = bg.f.d(\"mobile_chat_input_layout\");\r\n        strD3 = strD3.equals(\"null\") ? null : strD3;\r\n        this.f31983e = strD3 == null ? \"top\" : strD3;\r\n        String strD4 = bg.f.d(\"brush_pressure_sensitivity\");\r\n        strD4 = strD4.equals(\"null\") ? null : strD4;\r\n        this.f31984f = strD4 == null ? \"1\" : strD4;\r\n        String strD5 = bg.f.d(\"web_view_console_copy\");\r\n        strD5 = strD5.equals(\"null\") ? null : strD5;\r\n        this.f31985g = strD5 == null ? \"Async: Could not copy text:\" : strD5;\r\n        String strD6 = bg.f.d(\"web_view_console_copy_command\");\r\n        strD6 = strD6.equals(\"null\") ? null : strD6;\r\n        this.h = strD6 == null ? \"document.querySelector('#input-invite').value\" : strD6;\r\n        String strD7 = bg.f.d(\"web_view_console_init\");\r\n        String str2 = strD7.equals(\"null\") ? null : strD7;\r\n        this.f31986i = str2 == null ? \"loaded\" : str2;\r\n    }",
+      "reported_total_bytes": null
+    }
+  },
+  "confidence": "derived",
+  "authority": "shipped-artifact",
+  "environment": null,
+  "limitations": [
+    "Static decompiler observations do not establish runtime behavior; the APK is never executed.",
+    "Method signatures use provider display types; DEX prototypes come from frozen JADX metadata. Display names may be aliases, and overload indices are local to this engine and artifact.",
+    "Class inventories use parsed metadata before code generation, including synthetic members that may be omitted from decompiled source. Source positions remain unknown.",
+    "Incoming reference totals count JADX using nodes. Direct invoke entries within a using method report raw DEX code-unit offsets and method indexes, but coverage is limited to those nodes and directly matched invokes; it does not establish every possible dynamic or reflective call site.",
+    "Manifest summary fields are extracted by the upstream engine; decoded XML is retained for verification. APK signatures, split APKs, native libraries and Android runtime capture are not verified by this provider."
+  ],
+  "relationship_coverage": null,
+  "locations": [],
+  "evidence_links": []
+}

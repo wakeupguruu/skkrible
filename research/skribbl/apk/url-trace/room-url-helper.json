@@ -1,0 +1,130 @@
+{
+  "evidence_id": "ev_9a7c8057a25d3394bff7c5c0d6d114cba81d50e9a8897053d4ed8c55dc10cd84",
+  "subject": {
+    "name": "Scribble & Guess.apk",
+    "digest": {
+      "sha256": "3022cadd35ab19b6715cc2ea62f765205d513b1c8692b660b57646f5535c78ff"
+    },
+    "local_path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "format": "apk",
+    "architecture": null
+  },
+  "provider": {
+    "id": "jadx",
+    "name": "JADX headless",
+    "version": "0.7.1"
+  },
+  "analysis_profile": null,
+  "predicate_type": "rea.analysis",
+  "operation": "inspect_android_method",
+  "parameters": {
+    "path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "class_name": "bg.f",
+    "method_name": "b"
+  },
+  "raw_result": {
+    "server": {
+      "name": "rea-jadx-bridge",
+      "version": "4"
+    },
+    "bridge_sha256": "a02b1ef0a4a40abd1ae310b9ee686ca163e0b59a3256df524c35b90ed17e9e63",
+    "jar_sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+    "loaded": {
+      "state": "LOADED",
+      "apk_path": "C:\\Users\\vyasg\\AppData\\Local\\Temp\\rea-android-64d5c99f42c6bc31b77de36edfc03f46\\target.apk",
+      "class_count": 17541,
+      "resource_count": 740,
+      "threads": 1,
+      "resources": "full"
+    },
+    "calls": [
+      {
+        "operation": "rea_jvm_status",
+        "input": {},
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"java_version\":\"21.0.13\",\"available_processors\":22,\"engine_reported_version\":\"0.7.1\",\"metadata_scope\":\"parsed_members\",\"max_heap_bytes\":8438939648}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "get_class_summary",
+        "input": {
+          "class_name": "bg.f"
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"inner_class_count\":0,\"inner_classes\":[],\"name\":\"f\",\"full_name\":\"bg.f\",\"field_count\":2,\"fields\":[{\"def_pos\":0,\"name\":\"f2539a\",\"type\":\"dg.a\"},{\"def_pos\":0,\"name\":\"f2540b\",\"type\":\"java.util.Map\"}],\"methods\":[{\"name\":\"\\u003cclinit\\u003e\",\"is_constructor\":false,\"dex_descriptor\":\"()V\",\"signature\":\"\\u003cclinit\\u003e(): void\",\"def_pos\":0},{\"name\":\"a\",\"is_constructor\":false,\"dex_descriptor\":\"(Lng/a;)Z\",\"signature\":\"a(ng.a): boolean\",\"def_pos\":0},{\"name\":\"b\",\"is_constructor\":false,\"dex_descriptor\":\"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;\",\"signature\":\"b(java.lang.String, java.lang.String, java.lang.String): java.lang.String\",\"def_pos\":0},{\"name\":\"c\",\"is_constructor\":false,\"dex_descriptor\":\"(Landroid/content/Context;Lkm/c;)Ljava/lang/Object;\",\"signature\":\"c(android.content.Context, km.c): java.lang.Object\",\"def_pos\":0},{\"name\":\"d\",\"is_constructor\":false,\"dex_descriptor\":\"(Ljava/lang/String;)Ljava/lang/String;\",\"signature\":\"d(java.lang.String): java.lang.String\",\"def_pos\":0}],\"method_count\":5}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "get_method_body",
+        "input": {
+          "class_name": "bg.f",
+          "method_name": "b",
+          "overload_index": 0,
+          "smali_fallback": true
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"full_name\":\"bg.f.b\",\"overload_index\":0,\"method_name\":\"b\",\"overload_count\":1,\"dex_descriptor\":\"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;\",\"class_name\":\"bg.f\",\"mode\":\"java\",\"body\":\"    public static final String b(String str, String hostUrl, String defaultUrl) {\\r\\n        k.e(hostUrl, \\\"hostUrl\\\");\\r\\n        k.e(defaultUrl, \\\"defaultUrl\\\");\\r\\n        if (m.o0(str, hostUrl, false)) {\\r\\n            return m.o0(str, \\\"http:\\\", false) ? t.i0(str, true, \\\"http:\\\", \\\"https:\\\") : str;\\r\\n        }\\r\\n        return defaultUrl;\\r\\n    }\",\"markers\":[],\"fell_back\":false}"
+            }
+          ],
+          "isError": false
+        }
+      }
+    ]
+  },
+  "normalized_result": {
+    "engine": {
+      "name": "jadx-headless-mcp",
+      "version": "0.7.1",
+      "artifact_sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+      "source_revision": "5844800a486d2248fa949b74c9896285f5b54de2",
+      "worker_count": 1,
+      "heap_limit_mib": 8048
+    },
+    "class_name": "bg.f",
+    "method": {
+      "name": "b",
+      "reported_signature": "b(java.lang.String, java.lang.String, java.lang.String): java.lang.String",
+      "overload_index": 0,
+      "is_constructor": false,
+      "dex_descriptor": "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+    },
+    "overload_count": 1,
+    "representation": "java",
+    "body_status": "available",
+    "fell_back": false,
+    "markers": [],
+    "source": {
+      "status": "complete",
+      "text": "    public static final String b(String str, String hostUrl, String defaultUrl) {\r\n        k.e(hostUrl, \"hostUrl\");\r\n        k.e(defaultUrl, \"defaultUrl\");\r\n        if (m.o0(str, hostUrl, false)) {\r\n            return m.o0(str, \"http:\", false) ? t.i0(str, true, \"http:\", \"https:\") : str;\r\n        }\r\n        return defaultUrl;\r\n    }",
+      "reported_total_bytes": null
+    }
+  },
+  "confidence": "derived",
+  "authority": "shipped-artifact",
+  "environment": null,
+  "limitations": [
+    "Static decompiler observations do not establish runtime behavior; the APK is never executed.",
+    "Method signatures use provider display types; DEX prototypes come from frozen JADX metadata. Display names may be aliases, and overload indices are local to this engine and artifact.",
+    "Class inventories use parsed metadata before code generation, including synthetic members that may be omitted from decompiled source. Source positions remain unknown.",
+    "Incoming reference totals count JADX using nodes. Direct invoke entries within a using method report raw DEX code-unit offsets and method indexes, but coverage is limited to those nodes and directly matched invokes; it does not establish every possible dynamic or reflective call site.",
+    "Manifest summary fields are extracted by the upstream engine; decoded XML is retained for verification. APK signatures, split APKs, native libraries and Android runtime capture are not verified by this provider."
+  ],
+  "relationship_coverage": null,
+  "locations": [],
+  "evidence_links": []
+}

@@ -1,0 +1,78 @@
+{
+  "scope": "Selected read-only fields from the live binary_session response after the user restarted Codex.",
+  "server_identity": {
+    "package": {
+      "name": "rea-agents",
+      "version": "6.7.0",
+      "root_path": "C:\\Users\\vyasg\\AppData\\Roaming\\npm\\node_modules\\rea-agents",
+      "build_commit": null
+    },
+    "server": {
+      "name": "rea",
+      "version": "6.7.0",
+      "started_at": "2026-10-29T22:35:15.770Z",
+      "command_path": "C:\\Users\\vyasg\\AppData\\Roaming\\npm\\node_modules\\rea-agents\\scripts\\rea.mjs"
+    },
+    "sdk": {
+      "server": "2.3.1",
+      "client_test": "2.3.1",
+      "core": "2.3.1"
+    },
+    "negotiated_protocol_version": "2025-06-18",
+    "client": {
+      "name": "codex-mcp-client",
+      "version": "0.166.0"
+    },
+    "skill": {
+      "name": "reverse-engineer-anything",
+      "expected_version": "42"
+    },
+    "catalog": {
+      "counts": {
+        "cli_commands": 153,
+        "mcp_tools": 207,
+        "mcp_prompts": 6
+      },
+      "digests": {
+        "tools_sha256": "af39310c9591bb981893ec0d2188b1bcf6e9cc8ba3ac513d5bbefc8ddcb85639",
+        "prompts_sha256": "7152916ab48bd2a9677a5ad9cdbde0a51dc53c113934952ad096e93f5f18aa7e",
+        "combined_sha256": "96d8f6e6ea1b1ba13557216624a3461c738729d53c79b4b0100d1f3a3a32441c"
+      }
+    },
+    "protocol_features": {
+      "progress": true,
+      "cancellation": true,
+      "elicitation": false
+    },
+    "alignment": {
+      "state": "unknown",
+      "reasons": [],
+      "remediation": "Supply expected package, catalog, or registration identity to compare the live server."
+    }
+  },
+  "android_tool_availability": [
+    {
+      "names": [
+        "inspect_android_class",
+        "inspect_android_method",
+        "inspect_android_package",
+        "search_android_classes",
+        "trace_android_references"
+      ],
+      "surface": "android-provider",
+      "effects": [
+        "mutatesSession",
+        "writesFilesystem",
+        "launchesProcess",
+        "idempotent"
+      ],
+      "annotations": [
+        "idempotent",
+        "open_world"
+      ],
+      "available": true,
+      "reason": "available",
+      "remediation": null
+    }
+  ]
+}

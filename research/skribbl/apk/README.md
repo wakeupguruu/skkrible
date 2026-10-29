@@ -43,15 +43,15 @@ The provider was subsequently installed and verified; see [Android tooling](../.
 - Its `onCreate` reads an incoming URI and, as a fallback, the `EXTRA_ROOM_URL` intent extra, passing these through a helper with the configured host and URL. It also reads local preferences and initializes play-duration bookkeeping.
 - The Compose method consults `web_view_enable_ads` configuration before connecting the Android view to its UI.
 
-These are verified decompiled client-code observations. The configuration lookup implementation, actual current configuration values, final WebView URL-loading callback, and live redirects were not inspected. A constructor fallback is not proof of the URL a particular running app session will load. Neither official affiliation with skribbl.io nor its remote backend implementation follows from this code.
+These were the first verified decompiled client-code observations. The subsequent [complete URL-path investigation](url-trace/README.md) traced the configuration lookup and final `WebView.loadUrl` call. It also decoded the bundled Firebase defaults, which select **`https://skribbl.io/`**. The `doodlr.io` constructor value is a lower-level fallback. Actual activated configuration and live redirects remain unobserved. Neither official affiliation with skribbl.io nor its remote backend implementation follows from this code.
 
 ## Initial blocker and remaining limits
 
-During the initial archive-only inspection, REA's Android tools were unavailable because `REA_JADX_MCP_JAR` was not configured, and no JADX or Java command was found on this shell's PATH. This blocker has now been resolved for CLI analysis with a portable full JDK and the pinned provider JAR. Codex's existing REA registration has the new environment paths; its already-running MCP connection still requires restart/reconnection.
+During the initial archive-only inspection, REA's Android tools were unavailable because `REA_JADX_MCP_JAR` was not configured, and no JADX or Java command was found on this shell's PATH. This blocker was resolved with a portable full JDK and the pinned provider JAR. After the user's restart, MCP reported the Android tools available and successfully inspected classes, references, and method bodies.
 
 The initial inventory made no configuration changes. The follow-up installed the portable tools and backed up and updated only the REA environment configuration. The APK was never executed or modified. Package/version fields and manifest permission declarations are now decoded; signature verification was not performed. Access to the developer-domain website through the web tool failed, so no conclusions about the live site are drawn.
 
-Further useful checks are: follow configuration lookup and final URL-loading call sites, examine game-owned classes, and observe the app in an isolated Android device/emulator. Remote server code still requires separate evidence.
+Configuration lookup and the final URL-loading call have now been traced. Further useful checks are the installed app's active configuration, native game-owned classes, and observation in an isolated Android device/emulator. Remote server code still requires separate evidence.
 
 ## Saved evidence
 
@@ -60,3 +60,4 @@ Further useful checks are: follow configuration lookup and final URL-loading cal
 - [Decoded Android package and manifest](android-package.json): actual REA/JADX Evidence.
 - [CustomWebView class](custom-webview-class.json): actual REA/JADX member inventory.
 - [Constructor](custom-webview-constructor.json), [onCreate](custom-webview-oncreate.json), and [Compose method](custom-webview-compose.json): actual REA/JADX decompilation Evidence.
+- [URL/configuration trace](url-trace/README.md) and [bundled configuration defaults](bundled-config-defaults.json): follow-up establishing the skribbl.io wrapper path.

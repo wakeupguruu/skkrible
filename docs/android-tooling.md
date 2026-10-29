@@ -56,7 +56,7 @@ REA_JADX_MCP_JAR = 'C:\Users\vyasg\projects\skkrible\.tools\android\jadx-headles
 
 The original configuration was backed up as `config.toml.before-jadx-20261030-034606.bak` in the same user directory. A parsed comparison verified that only the REA environment table changed. The user configuration and backup are outside Git.
 
-The already-running MCP process retains its old environment. Restart/reconnect REA, or restart the Codex session, to use the Android tools through that connection. CLI verification succeeded independently. Moving or deleting this project's `.tools` directory requires updating these two paths.
+An already-running MCP process retains its old environment, so a restart/reconnection is needed after initial configuration. The user has now restarted Codex: REA reports the Android tools available, and class, reference, and method inspections have succeeded through MCP. CLI verification also succeeded independently. Moving or deleting this project's `.tools` directory requires updating these two paths.
 
 ## Verification completed
 
@@ -67,7 +67,7 @@ The already-running MCP process retains its old environment. Restart/reconnect R
 - REA successfully inspected the APK's CustomWebView class.
 - The decoded package is `com.rahuls.scribbleio`, version 39.0 (code 39), minimum SDK 24, target SDK 36.
 
-The live Codex MCP connection has not been restarted. APK signature and Android runtime behavior were not verified.
+After the user's restart, the live Codex MCP connection also passed Android availability and real class/method/reference checks. APK signature and Android runtime behavior were not verified.
 
 ## References
 
