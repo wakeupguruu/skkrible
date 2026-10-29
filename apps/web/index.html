@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7f6f2" />
+    <meta name="description" content="A little drawing, a lot of guessing. Make a private room and turn questionable doodles into a great night with friends." />
+    <title>Skkrible — bad drawings, great company</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script type="module" src="/src/main.mjs"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to game</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Skkrible home"><span class="brand-mark" aria-hidden="true">✳</span>skkrible<span class="brand-dot">.</span></a>
+      <div class="header-right"><span class="tiny-label header-tagline">a little creative chaos</span><button class="text-button" id="help-button">How to play <span aria-hidden="true">↗</span></button></div>
+    </header>
+    <main id="main">
+      <section id="home" class="home">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="little-dot"></span> YOUR PEOPLE. YOUR ROOM.</div>
+          <h1>Bad drawings.<br /><span class="underlined">Great company.</span></h1>
+          <p class="hero-description">A game night with zero artistic requirements.<br class="desktop-break" /> Draw something ridiculous. Guess wildly. Repeat.</p>
+          <div class="home-art" aria-hidden="true">
+            <span class="art-label"><span class="little-dot coral"></span> an extremely good cat, probably</span>
+            <svg class="cat-doodle" viewBox="0 0 500 260" fill="none">
+              <path class="doodle-halo" d="M145 124c-8-74 149-117 204-33 54 82-17 158-104 145-70-11-101-58-100-112Z" fill="#ece9fc" />
+              <path d="m176 113-9-57 49 32c26-12 57-12 83-1l44-30-4 65c22 30 15 73-10 88-34 21-101 22-137-4-25-19-33-59-16-93Z" fill="#fbcb81" stroke="#303239" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="m180 81 4 32 18-18m113-1 16-14-3 32" stroke="#e58d6c" stroke-width="5" stroke-linecap="round" />
+              <path d="m213 139 13 1m69-3 12-1" stroke="#303239" stroke-width="7" stroke-linecap="round" />
+              <path d="m249 153 12 1-7 8-5-9Z" fill="#303239" /><path d="M254 162c1 17-18 21-20 8m20-8c0 17 18 18 21 6m-67-12-45-7m46 20-41 9m128-24 45-11m-44 23 43 6" stroke="#303239" stroke-width="4" stroke-linecap="round" />
+              <path d="M365 70c-1-15 19-21 26-7 10-18 29-2 18 11l-22 24-22-28Z" fill="#f3a68d" stroke="#303239" stroke-width="3" />
+              <path d="m111 117 4 13 14 1-12 8 3 14-12-8-12 8 3-14-11-8 14-1 9-13Z" fill="#b7cdad" />
+              <path d="m364 208 8-9m-4 28 15 1M120 198l11-4m-5-10 8 8" stroke="#8c87c7" stroke-width="4" stroke-linecap="round" />
+              <path d="M36 224c29 8 76 1 106-12" stroke="#a4a1b3" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 6" /><path d="m130 208 15 3-8 12" stroke="#a4a1b3" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <span class="hand-note">looks just like you, tbh.</span>
+          </div>
+          <div class="home-footnote"><span class="mini-avatars" aria-hidden="true">🐸 🦊 🐨</span><span>Just a link and your favorite people.<br /><strong>No downloads. No accounts.</strong></span></div>
+        </div>
+        <section class="join-card" aria-labelledby="join-title">
+          <div class="card-topline"><span class="eyebrow">LET’S MAKE A MESS</span><span class="pencil-sticker" aria-hidden="true">✎</span></div>
+          <h2 id="join-title">Who’s playing?</h2>
+          <p class="muted">Pick a face. Bring your questionable talent.</p>
+          <form id="play-form">
+            <label class="field-label" for="player-name">YOUR NAME</label>
+            <input id="player-name" name="name" placeholder="Your legendary nickname" maxlength="20" autocomplete="nickname" required />
+            <span class="field-label avatar-label" id="avatar-label">YOUR LITTLE ALTER EGO</span>
+            <div class="avatar-picker" id="avatar-picker" role="group" aria-labelledby="avatar-label"></div>
+            <button class="primary-button create-button" id="create-room" type="submit">Create a private room <span aria-hidden="true">↗</span></button>
+          </form>
+          <div class="or-divider"><span>or, join the gang</span></div>
+          <form id="join-form" class="join-code-form">
+            <label class="visually-hidden" for="room-code">Room code</label>
+            <input id="room-code" placeholder="ROOM CODE" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+            <button class="secondary-button" id="join-room" type="submit">Join room <span aria-hidden="true">→</span></button>
+          </form>
+          <p class="form-error" id="home-error" role="alert"></p>
+          <p class="card-fineprint"><span aria-hidden="true">✦</span> A private little corner of the internet.</p>
+        </section>
+        <div class="how-strip"><span><b>01</b> Make a room</span><span class="strip-arrow" aria-hidden="true">↝</span><span><b>02</b> Draw your worst</span><span class="strip-arrow" aria-hidden="true">↝</span><span><b>03</b> Guess your best</span><span class="strip-star" aria-hidden="true">✳</span></div>
+      </section>
+
+      <section id="game" class="game" hidden aria-label="Private game room">
+        <div class="room-topbar">
+          <div class="room-identity"><span class="eyebrow">THE GANG’S ALL HERE</span><div class="room-code-label">Room <button id="copy-room-code" class="code-button" title="Copy invite link"></button><button id="copy-invite" class="text-button">Invite friends <span aria-hidden="true">↗</span></button></div></div>
+          <div class="room-actions"><span id="connection-status" class="connection-status" role="status">Connecting…</span><button id="settings-button" class="icon-button" aria-label="Room settings" title="Room settings">⚙</button><button id="leave-room" class="text-button muted">Leave <span aria-hidden="true">↗</span></button></div>
+        </div>
+        <div class="game-grid">
+          <aside class="players-panel panel" aria-label="Players and room scores"><div class="panel-heading"><h2>The gang</h2><span id="player-count" class="count-badge">0 / 12</span></div><div id="players-list" class="players-list"></div><div class="players-footnote"><span aria-hidden="true">✦</span> All skill levels. Mostly none.</div></aside>
+          <section class="drawing-panel" aria-label="Drawing board">
+            <div class="drawing-header"><div><span class="eyebrow" id="round-label">WAITING FOR FRIENDS</span><span id="turn-label" class="turn-label">Your next masterpiece awaits.</span></div><div class="timer" id="timer" aria-label="Seconds remaining">—</div></div>
+            <div class="word-banner"><span id="word-label">GRAB A FRIEND AND A LITTLE IMAGINATION</span><strong id="word-display">let’s draw something.</strong></div>
+            <div class="board-wrap" id="board-wrap">
+              <canvas id="drawing-canvas" width="1000" height="750" aria-label="Shared drawing canvas. The selected player draws; everyone else guesses in chat."></canvas>
+              <canvas id="preview-canvas" width="1000" height="750" aria-hidden="true"></canvas>
+              <div id="board-overlay" class="board-overlay" hidden></div>
+              <span class="board-signature" aria-hidden="true">skkrible.</span>
+            </div>
+            <div class="drawing-toolbar"><div class="tool-group"><button id="pen-tool" class="tool-button selected" aria-label="Pen" aria-pressed="true" title="Pen (B)">✎</button><button id="eraser-tool" class="tool-button" aria-label="Eraser" aria-pressed="false" title="Eraser (E)">▱</button><span class="tool-divider"></span><button id="undo-button" class="tool-button" aria-label="Undo last stroke" title="Undo (Ctrl+Z)">↶</button><button id="clear-button" class="tool-button" aria-label="Clear drawing" title="Clear drawing">⌫</button></div><div id="colors" class="colors" role="group" aria-label="Brush color"></div><div class="brush-size-control"><label class="visually-hidden" for="brush-size">Brush size</label><select id="brush-size" title="Brush size"><option value="4">● Small</option><option value="10" selected>● Medium</option><option value="20">● Large</option><option value="32">● Huge</option></select></div></div>
+            <p id="drawing-note" class="drawing-note">The tools are yours when it’s your turn.</p>
+          </section>
+          <aside class="chat-panel panel" aria-label="Guesses and chat"><div class="panel-heading"><h2>Wild guesses</h2><span class="chat-heading-mark" aria-hidden="true">↗</span></div><div id="chat-messages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions"></div><form id="chat-form" class="chat-form"><label for="chat-input" class="visually-hidden">Your guess or message</label><input id="chat-input" placeholder="Type your guess…" maxlength="160" autocomplete="off" spellcheck="false" /><button id="send-chat" type="submit" aria-label="Send guess or message">↑</button></form><p class="chat-hint" id="chat-hint">Press enter to send your best guess.</p></aside>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer"><span>Drawn together. Even from far apart.</span><span class="footer-flower" aria-hidden="true">✳</span><span>A little less scrolling, a little more scribbling.</span></footer>
+    <div id="toast" class="toast" role="status" hidden></div>
+
+    <dialog id="help-dialog" class="modal"><form method="dialog"><button class="modal-close" aria-label="Close instructions">×</button></form><div class="eyebrow">A VERY SERIOUS ART CLUB</div><h2>Here’s the whole idea.</h2><ol class="help-steps"><li><b>Get the gang together.</b><p>Create a private room, copy the invite, and send it to your friends.</p></li><li><b>Take turns making masterpieces.</b><p>Pick one of three words. Draw it with the pen and colors. No spelling it out!</p></li><li><b>Throw your guesses into chat.</b><p>Correct guesses earn points. Faster guesses earn more, and the artist gets points too.</p></li></ol><p class="muted">Connection hiccup? Keep the tab open. Your seat and scores can reconnect automatically.</p></dialog>
+    <dialog id="settings-dialog" class="modal"><form method="dialog"><button class="modal-close" aria-label="Close room settings">×</button></form><div class="eyebrow">YOUR ROOM, YOUR RULES</div><h2>Set the vibe.</h2><form id="settings-form"><div class="settings-grid"><label>Players<select name="maxPlayers"><option>4</option><option>6</option><option>8</option><option selected>12</option><option>16</option><option>20</option></select></label><label>Rounds<select name="rounds"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label><label>Drawing time<select name="drawTime"><option value="30">30 seconds</option><option value="60">60 seconds</option><option value="80" selected>80 seconds</option><option value="120">120 seconds</option></select></label><label>Hints<select name="hints"><option>0</option><option>1</option><option selected>2</option><option>3</option></select></label></div><label class="field-label" for="custom-words">CUSTOM WORDS <span class="muted">optional</span></label><textarea id="custom-words" name="customWords" maxlength="4000" rows="3" placeholder="inside joke, favorite snack, that one friend…"></textarea><p class="input-help">Separate words with commas. Each word: 2–32 characters.</p><label class="checkbox-label"><input type="checkbox" name="customOnly" /> Only use these words (at least 5)</label><p id="settings-error" class="form-error" role="alert"></p><button class="primary-button" type="submit">Save room settings <span aria-hidden="true">✓</span></button></form></dialog>
+    <dialog id="invite-dialog" class="modal"><form method="dialog"><button class="modal-close" aria-label="Close invite link">×</button></form><div class="eyebrow">THE MORE THE MESSIER</div><h2>Send this to the gang.</h2><label class="field-label" for="invite-link">YOUR PRIVATE INVITE</label><input id="invite-link" readonly /><p class="muted">Select the link above and copy it into your group chat.</p></dialog>
+  </body>
+</html>
