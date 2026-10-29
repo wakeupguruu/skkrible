@@ -33,6 +33,7 @@ export class RoomConnection {
     const socket = this.socket = new WebSocket(`${BACKEND.replace(/^http/, 'ws')}/api/rooms/${this.code}/socket`);
     socket.onopen = () => socket.send(JSON.stringify({ type: 'join', token: this.token, ...this.profile }));
     socket.onmessage = event => {
+      if (this.stopped || socket !== this.socket) return;
       this.lastSeen = Date.now();
       if (event.data === 'pong') return;
       let frame;
@@ -59,6 +60,7 @@ export class RoomConnection {
     };
     socket.onerror = () => {};
     socket.onclose = event => {
+      if (this.stopped || socket !== this.socket) return;
       this.ready = false;
       if ([4001, 4002, 4003, 4004].includes(event.code)) {
         this.stopped = true; this.onStatus('stopped');

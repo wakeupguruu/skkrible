@@ -95,6 +95,10 @@ test('a private match restores a dropped seat, keeps draft text, and completes w
     await expect(page.locator('.podium-person')).toHaveCount(2);
     await page.screenshot({ path: '.tools/ui-results-desktop.png', fullPage: true });
     await expect(page.getByRole('button', { name: 'One more round?' })).toBeEnabled();
+    page.once('dialog', dialog => dialog.accept());
+    await page.locator('#leave-room').click();
+    await expect(page.locator('#home')).toBeVisible();
+    await expect(friend.locator('#player-count')).toHaveText('1 / 12');
     expect(errors).toEqual([]);
   } finally { await otherContext.close(); }
 });
