@@ -1,0 +1,2 @@
+# Preserve downloaded research artifacts byte-for-byte, including upstream whitespace.
+research/skribbl/client/** -text -whitespace
