@@ -1,0 +1,9 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "skkrible-rooms",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-01",
+  "durable_objects": { "bindings": [{ "name": "ROOMS", "class_name": "GameRoom" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["GameRoom"] }],
+  "vars": { "ALLOWED_ORIGINS": "http://127.0.0.1:5173,http://localhost:5173" }
+}
