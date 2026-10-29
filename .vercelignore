@@ -1,0 +1,10 @@
+.git/
+.codex/
+.tools/
+research/
+docs/
+tests/
+test-results/
+playwright-report/
+scripts/
+apps/backend/

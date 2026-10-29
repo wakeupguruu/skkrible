@@ -52,9 +52,11 @@ The frontend is ready for Vercel's free static hosting using the root `vercel.js
 1. Deploy the backend with `npx wrangler deploy --config apps/backend/wrangler.jsonc` while using a Cloudflare Workers **Free** account.
 2. Import this repository into Vercel. Keep the root directory at the repository root; build/output settings are in `vercel.json`.
 3. Set Vercel's `VITE_BACKEND_URL` to the returned `https://…workers.dev` URL and rebuild.
-4. Set the Worker's `ALLOWED_ORIGINS` variable to your exact Vercel origin, such as `https://your-project.vercel.app`, then redeploy. Separate multiple trusted origins with commas; wildcards are not accepted.
+4. Replace `ALLOWED_ORIGINS` in `apps/backend/wrangler.jsonc` with your exact Vercel origin, such as `https://your-project.vercel.app`, then redeploy. You can retain the two local origins for local development. Separate trusted origins with commas; wildcards are not accepted. A later CLI deployment uses this file, so a dashboard-only variable edit would be overwritten.
 
 `VITE_` variables are public build-time values. No backend credentials belong in them. Local origin defaults are intentionally not a production origin allowlist. Use Cloudflare's free `workers.dev` URL and Vercel's free `vercel.app` URL; a custom domain is not required.
+
+For a local CLI deployment instead of a Git import, sign in with `npx vercel login`, then run `npx vercel --prod` from the repository root. `.vercelignore` omits analysis artifacts, downloaded tools, backend source, and tests from the frontend upload. Cloudflare login is `npx wrangler login`; these interactive account authorizations must be completed by the account owner.
 
 ## Reliability and free-tier boundaries
 

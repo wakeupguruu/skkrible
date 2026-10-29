@@ -36,4 +36,4 @@ This is a short, synthetic localhost test. It demonstrates the implemented 100-c
 
 ## Deployment state
 
-The app is locally buildable and tested, with Vercel frontend and Cloudflare backend configuration prepared. No paid service was enabled. Cloudflare CLI reported that no account was authenticated. A live public release has not been verified.
+The app is locally buildable and tested, with Vercel frontend and Cloudflare backend configuration prepared. No paid service was enabled. Cloudflare CLI reported that no account was authenticated; Vercel CLI 65.8.0 also reported logged out. A live public release has not been verified.
