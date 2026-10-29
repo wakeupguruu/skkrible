@@ -30,15 +30,33 @@ This is Android client material with WebView-related classes and references to r
 
 The APK may still clarify app navigation, WebView customization, game integrations, and word-list handling after proper Android decompilation. Finding a domain string alone does not establish affiliation with its owner or current network behavior.
 
-## Limitations and next evidence
+## Follow-up with the installed JADX provider
 
-REA's `inspect_android_package`, class, method, and reference tools are unavailable because `REA_JADX_MCP_JAR` is not configured. REA requests a caller-supplied `jadx-headless-mcp 0.7.1` JAR; an appropriate Java runtime is also needed. No JADX or Java command was found on this shell's PATH. That does not establish that neither is installed elsewhere.
+The provider was subsequently installed and verified; see [Android tooling](../../../docs/android-tooling.md). REA 6.7.0 with jadx-headless-mcp 0.7.1 successfully decoded this APK and decompiled selected methods without executing the Android application.
 
-No software was installed, configuration changed, APK executed, or original APK modified. Android package/version fields and permissions were not fully decoded; signature verification was not performed. Access to the developer-domain website through the web tool failed, so no conclusions about the live site are drawn.
+- Package: `com.rahuls.scribbleio`.
+- App version: 39.0, version code 39.
+- Minimum SDK: 24; target SDK: 36.
+- REA returned a complete decoded manifest and an engine-reported inventory of 17,541 classes and 740 resources. These are JADX's reported counts, not the raw sum of both DEX class-definition tables.
+- `CustomWebView` contains an `android.webkit.WebView` field and an Android Compose view-interoperability call.
+- Its constructor looks up `web_view_host` and `web_view_url` configuration values. When those lookups return the string `null`, its defaults are **`doodlr.io`** and **`https://doodlr.io/`**. The original APK therefore does not establish that this view defaults to skribbl.io.
+- Its `onCreate` reads an incoming URI and, as a fallback, the `EXTRA_ROOM_URL` intent extra, passing these through a helper with the configured host and URL. It also reads local preferences and initializes play-duration bookkeeping.
+- The Compose method consults `web_view_enable_ads` configuration before connecting the Android view to its UI.
 
-Further useful checks are: decompile app-owned classes and URL-loading call sites; decode the manifest/resources; and observe the app in an isolated Android device/emulator. Remote server code will still require separate evidence.
+These are verified decompiled client-code observations. The configuration lookup implementation, actual current configuration values, final WebView URL-loading callback, and live redirects were not inspected. A constructor fallback is not proof of the URL a particular running app session will load. Neither official affiliation with skribbl.io nor its remote backend implementation follows from this code.
+
+## Initial blocker and remaining limits
+
+During the initial archive-only inspection, REA's Android tools were unavailable because `REA_JADX_MCP_JAR` was not configured, and no JADX or Java command was found on this shell's PATH. This blocker has now been resolved for CLI analysis with a portable full JDK and the pinned provider JAR. Codex's existing REA registration has the new environment paths; its already-running MCP connection still requires restart/reconnection.
+
+The initial inventory made no configuration changes. The follow-up installed the portable tools and backed up and updated only the REA environment configuration. The APK was never executed or modified. Package/version fields and manifest permission declarations are now decoded; signature verification was not performed. Access to the developer-domain website through the web tool failed, so no conclusions about the live site are drawn.
+
+Further useful checks are: follow configuration lookup and final URL-loading call sites, examine game-owned classes, and observe the app in an isolated Android device/emulator. Remote server code still requires separate evidence.
 
 ## Saved evidence
 
 - [REA archive inventory summary](rea-inventory-summary.json): actual REA Evidence.
 - [DEX observations](dex-observations.json): separate Python table inspection, with candidate-match limitations.
+- [Decoded Android package and manifest](android-package.json): actual REA/JADX Evidence.
+- [CustomWebView class](custom-webview-class.json): actual REA/JADX member inventory.
+- [Constructor](custom-webview-constructor.json), [onCreate](custom-webview-oncreate.json), and [Compose method](custom-webview-compose.json): actual REA/JADX decompilation Evidence.

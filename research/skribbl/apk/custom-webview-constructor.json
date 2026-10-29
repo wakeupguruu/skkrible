@@ -1,0 +1,147 @@
+{
+  "evidence_id": "ev_79e11ee626a9ee31051607bf5751daf29539af4d2e85da33788d00b1d86d8eb3",
+  "subject": {
+    "name": "Scribble & Guess.apk",
+    "digest": {
+      "sha256": "3022cadd35ab19b6715cc2ea62f765205d513b1c8692b660b57646f5535c78ff"
+    },
+    "local_path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "format": "apk",
+    "architecture": null
+  },
+  "provider": {
+    "id": "jadx",
+    "name": "JADX headless",
+    "version": "0.7.1"
+  },
+  "analysis_profile": null,
+  "predicate_type": "rea.analysis",
+  "operation": "inspect_android_method",
+  "parameters": {
+    "path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "class_name": "com.rahuls.scribbleio.ui.screens.main.CustomWebView",
+    "method_name": "<init>"
+  },
+  "raw_result": {
+    "server": {
+      "name": "rea-jadx-bridge",
+      "version": "4"
+    },
+    "bridge_sha256": "a02b1ef0a4a40abd1ae310b9ee686ca163e0b59a3256df524c35b90ed17e9e63",
+    "jar_sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+    "loaded": {
+      "state": "LOADED",
+      "apk_path": "C:\\Users\\vyasg\\AppData\\Local\\Temp\\rea-android-46df272215a24788ae5f9b3a7b0f0b79\\target.apk",
+      "class_count": 17541,
+      "resource_count": 740,
+      "threads": 1,
+      "resources": "full"
+    },
+    "calls": [
+      {
+        "operation": "rea_jvm_status",
+        "input": {},
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"metadata_scope\":\"parsed_members\",\"max_heap_bytes\":8438939648,\"java_version\":\"21.0.13\",\"available_processors\":22,\"engine_reported_version\":\"0.7.1\"}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "load_apk",
+        "input": {
+          "path": "C:\\Users\\vyasg\\AppData\\Local\\Temp\\rea-android-46df272215a24788ae5f9b3a7b0f0b79\\target.apk",
+          "threads": 1,
+          "resources": "full"
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"state\":\"LOADED\",\"apk_path\":\"C:\\\\Users\\\\vyasg\\\\AppData\\\\Local\\\\Temp\\\\rea-android-46df272215a24788ae5f9b3a7b0f0b79\\\\target.apk\",\"class_count\":17541,\"raw_class_count\":17541,\"resource_count\":740,\"load_duration_ms\":5860,\"decompile_timeout_ms\":90000,\"threads\":1,\"code_cache_size\":64,\"resources\":\"full\"}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "get_class_summary",
+        "input": {
+          "class_name": "com.rahuls.scribbleio.ui.screens.main.CustomWebView"
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"methods\":[{\"signature\":\"\\u003cinit\\u003e(): void\",\"def_pos\":0,\"name\":\"\\u003cinit\\u003e\",\"is_constructor\":true,\"dex_descriptor\":\"()V\"},{\"signature\":\"c(): java.lang.Object\",\"def_pos\":0,\"name\":\"c\",\"is_constructor\":false,\"dex_descriptor\":\"()Ljava/lang/Object;\"},{\"signature\":\"d(): androidx.lifecycle.z0\",\"def_pos\":0,\"name\":\"d\",\"is_constructor\":false,\"dex_descriptor\":\"()Landroidx/lifecycle/z0;\"},{\"signature\":\"onCreate(android.os.Bundle): void\",\"def_pos\":0,\"name\":\"onCreate\",\"is_constructor\":false,\"dex_descriptor\":\"(Landroid/os/Bundle;)V\"},{\"signature\":\"onDestroy(): void\",\"def_pos\":0,\"name\":\"onDestroy\",\"is_constructor\":false,\"dex_descriptor\":\"()V\"},{\"signature\":\"onPause(): void\",\"def_pos\":0,\"name\":\"onPause\",\"is_constructor\":false,\"dex_descriptor\":\"()V\"},{\"signature\":\"onResume(): void\",\"def_pos\":0,\"name\":\"onResume\",\"is_constructor\":false,\"dex_descriptor\":\"()V\"},{\"signature\":\"p(int, androidx.compose.runtime.Composer): void\",\"def_pos\":0,\"name\":\"p\",\"is_constructor\":false,\"dex_descriptor\":\"(ILandroidx/compose/runtime/Composer;)V\"},{\"signature\":\"q(): ch.b\",\"def_pos\":0,\"name\":\"q\",\"is_constructor\":false,\"dex_descriptor\":\"()Lch/b;\"},{\"signature\":\"r(android.os.Bundle): void\",\"def_pos\":0,\"name\":\"r\",\"is_constructor\":false,\"dex_descriptor\":\"(Landroid/os/Bundle;)V\"},{\"signature\":\"s(): void\",\"def_pos\":0,\"name\":\"s\",\"is_constructor\":false,\"dex_descriptor\":\"()V\"}],\"method_count\":11,\"inner_class_count\":0,\"inner_classes\":[],\"name\":\"CustomWebView\",\"full_name\":\"com.rahuls.scribbleio.ui.screens.main.CustomWebView\",\"field_count\":15,\"fields\":[{\"type\":\"java.lang.String\",\"def_pos\":0,\"name\":\"A\"},{\"type\":\"java.lang.String\",\"def_pos\":0,\"name\":\"B\"},{\"type\":\"dg.a\",\"def_pos\":0,\"name\":\"C\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"D\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"E\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"F\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"G\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"H\"},{\"type\":\"int\",\"def_pos\":0,\"name\":\"I\"},{\"type\":\"bq.d\",\"def_pos\":0,\"name\":\"f23833u\"},{\"type\":\"ch.b\",\"def_pos\":0,\"name\":\"f23834v\"},{\"type\":\"java.lang.Object\",\"def_pos\":0,\"name\":\"f23835w\"},{\"type\":\"boolean\",\"def_pos\":0,\"name\":\"f23836x\"},{\"type\":\"android.webkit.WebView\",\"def_pos\":0,\"name\":\"f23837y\"},{\"type\":\"java.lang.String\",\"def_pos\":0,\"name\":\"f23838z\"}]}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "get_method_body",
+        "input": {
+          "class_name": "com.rahuls.scribbleio.ui.screens.main.CustomWebView",
+          "method_name": "<init>",
+          "overload_index": 0,
+          "smali_fallback": true
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"fell_back\":false,\"full_name\":\"com.rahuls.scribbleio.ui.screens.main.CustomWebView.\\u003cinit\\u003e\",\"overload_index\":0,\"method_name\":\"\\u003cinit\\u003e\",\"overload_count\":1,\"dex_descriptor\":\"()V\",\"class_name\":\"com.rahuls.scribbleio.ui.screens.main.CustomWebView\",\"mode\":\"java\",\"body\":\"    public CustomWebView() {\\r\\n        m(new v(this, 2));\\r\\n        String strD \\u003d f.d(\\\"web_view_host\\\");\\r\\n        strD \\u003d strD.equals(\\\"null\\\") ? null : strD;\\r\\n        this.f23838z \\u003d strD \\u003d\\u003d null ? \\\"doodlr.io\\\" : strD;\\r\\n        String strD2 \\u003d f.d(\\\"web_view_url\\\");\\r\\n        String str \\u003d strD2.equals(\\\"null\\\") ? null : strD2;\\r\\n        str \\u003d str \\u003d\\u003d null ? \\\"https://doodlr.io/\\\" : str;\\r\\n        this.A \\u003d str;\\r\\n        this.B \\u003d str;\\r\\n        this.G \\u003d 2000L;\\r\\n    }\",\"markers\":[]}"
+            }
+          ],
+          "isError": false
+        }
+      }
+    ]
+  },
+  "normalized_result": {
+    "engine": {
+      "name": "jadx-headless-mcp",
+      "version": "0.7.1",
+      "artifact_sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+      "source_revision": "5844800a486d2248fa949b74c9896285f5b54de2",
+      "worker_count": 1,
+      "heap_limit_mib": 8048
+    },
+    "class_name": "com.rahuls.scribbleio.ui.screens.main.CustomWebView",
+    "method": {
+      "name": "<init>",
+      "reported_signature": "<init>(): void",
+      "overload_index": 0,
+      "is_constructor": true,
+      "dex_descriptor": "()V"
+    },
+    "overload_count": 1,
+    "representation": "java",
+    "body_status": "available",
+    "fell_back": false,
+    "markers": [],
+    "source": {
+      "status": "complete",
+      "text": "    public CustomWebView() {\r\n        m(new v(this, 2));\r\n        String strD = f.d(\"web_view_host\");\r\n        strD = strD.equals(\"null\") ? null : strD;\r\n        this.f23838z = strD == null ? \"doodlr.io\" : strD;\r\n        String strD2 = f.d(\"web_view_url\");\r\n        String str = strD2.equals(\"null\") ? null : strD2;\r\n        str = str == null ? \"https://doodlr.io/\" : str;\r\n        this.A = str;\r\n        this.B = str;\r\n        this.G = 2000L;\r\n    }",
+      "reported_total_bytes": null
+    }
+  },
+  "confidence": "derived",
+  "authority": "shipped-artifact",
+  "environment": null,
+  "limitations": [
+    "Static decompiler observations do not establish runtime behavior; the APK is never executed.",
+    "Method signatures use provider display types; DEX prototypes come from frozen JADX metadata. Display names may be aliases, and overload indices are local to this engine and artifact.",
+    "Class inventories use parsed metadata before code generation, including synthetic members that may be omitted from decompiled source. Source positions remain unknown.",
+    "Incoming reference totals count JADX using nodes. Direct invoke entries within a using method report raw DEX code-unit offsets and method indexes, but coverage is limited to those nodes and directly matched invokes; it does not establish every possible dynamic or reflective call site.",
+    "Manifest summary fields are extracted by the upstream engine; decoded XML is retained for verification. APK signatures, split APKs, native libraries and Android runtime capture are not verified by this provider."
+  ],
+  "relationship_coverage": null,
+  "locations": [],
+  "evidence_links": []
+}

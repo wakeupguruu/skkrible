@@ -1,0 +1,253 @@
+{
+  "evidence_id": "ev_81deb15c7d5e02355b59336e1ea92d124aa59d1cbd242c8cb0a64ec7f897c416",
+  "subject": {
+    "name": "Scribble & Guess.apk",
+    "digest": {
+      "sha256": "3022cadd35ab19b6715cc2ea62f765205d513b1c8692b660b57646f5535c78ff"
+    },
+    "local_path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "format": "apk",
+    "architecture": null
+  },
+  "provider": {
+    "id": "jadx",
+    "name": "JADX headless",
+    "version": "0.7.1"
+  },
+  "analysis_profile": null,
+  "predicate_type": "rea.analysis",
+  "operation": "inspect_android_class",
+  "parameters": {
+    "path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "class_name": "com.rahuls.scribbleio.ui.screens.main.CustomWebView"
+  },
+  "raw_result": {
+    "server": {
+      "name": "rea-jadx-bridge",
+      "version": "4"
+    },
+    "bridge_sha256": "a02b1ef0a4a40abd1ae310b9ee686ca163e0b59a3256df524c35b90ed17e9e63",
+    "jar_sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+    "loaded": {
+      "state": "LOADED",
+      "apk_path": "C:\\Users\\vyasg\\AppData\\Local\\Temp\\rea-android-4ec148c3a8669d854ef1d5acd00eb5cd\\target.apk",
+      "class_count": 17541,
+      "resource_count": 740,
+      "threads": 1,
+      "resources": "full"
+    },
+    "calls": [
+      {
+        "operation": "rea_jvm_status",
+        "input": {},
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"max_heap_bytes\":8438939648,\"java_version\":\"21.0.13\",\"available_processors\":22,\"engine_reported_version\":\"0.7.1\",\"metadata_scope\":\"parsed_members\"}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "load_apk",
+        "input": {
+          "path": "C:\\Users\\vyasg\\AppData\\Local\\Temp\\rea-android-4ec148c3a8669d854ef1d5acd00eb5cd\\target.apk",
+          "threads": 1,
+          "resources": "full"
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"state\":\"LOADED\",\"apk_path\":\"C:\\\\Users\\\\vyasg\\\\AppData\\\\Local\\\\Temp\\\\rea-android-4ec148c3a8669d854ef1d5acd00eb5cd\\\\target.apk\",\"class_count\":17541,\"raw_class_count\":17541,\"resource_count\":740,\"load_duration_ms\":4140,\"decompile_timeout_ms\":90000,\"threads\":1,\"code_cache_size\":64,\"resources\":\"full\"}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "get_class_summary",
+        "input": {
+          "class_name": "com.rahuls.scribbleio.ui.screens.main.CustomWebView"
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"methods\":[{\"def_pos\":0,\"name\":\"\\u003cinit\\u003e\",\"is_constructor\":true,\"dex_descriptor\":\"()V\",\"signature\":\"\\u003cinit\\u003e(): void\"},{\"def_pos\":0,\"name\":\"c\",\"is_constructor\":false,\"dex_descriptor\":\"()Ljava/lang/Object;\",\"signature\":\"c(): java.lang.Object\"},{\"def_pos\":0,\"name\":\"d\",\"is_constructor\":false,\"dex_descriptor\":\"()Landroidx/lifecycle/z0;\",\"signature\":\"d(): androidx.lifecycle.z0\"},{\"def_pos\":0,\"name\":\"onCreate\",\"is_constructor\":false,\"dex_descriptor\":\"(Landroid/os/Bundle;)V\",\"signature\":\"onCreate(android.os.Bundle): void\"},{\"def_pos\":0,\"name\":\"onDestroy\",\"is_constructor\":false,\"dex_descriptor\":\"()V\",\"signature\":\"onDestroy(): void\"},{\"def_pos\":0,\"name\":\"onPause\",\"is_constructor\":false,\"dex_descriptor\":\"()V\",\"signature\":\"onPause(): void\"},{\"def_pos\":0,\"name\":\"onResume\",\"is_constructor\":false,\"dex_descriptor\":\"()V\",\"signature\":\"onResume(): void\"},{\"def_pos\":0,\"name\":\"p\",\"is_constructor\":false,\"dex_descriptor\":\"(ILandroidx/compose/runtime/Composer;)V\",\"signature\":\"p(int, androidx.compose.runtime.Composer): void\"},{\"def_pos\":0,\"name\":\"q\",\"is_constructor\":false,\"dex_descriptor\":\"()Lch/b;\",\"signature\":\"q(): ch.b\"},{\"def_pos\":0,\"name\":\"r\",\"is_constructor\":false,\"dex_descriptor\":\"(Landroid/os/Bundle;)V\",\"signature\":\"r(android.os.Bundle): void\"},{\"def_pos\":0,\"name\":\"s\",\"is_constructor\":false,\"dex_descriptor\":\"()V\",\"signature\":\"s(): void\"}],\"method_count\":11,\"inner_class_count\":0,\"inner_classes\":[],\"name\":\"CustomWebView\",\"full_name\":\"com.rahuls.scribbleio.ui.screens.main.CustomWebView\",\"field_count\":15,\"fields\":[{\"type\":\"java.lang.String\",\"def_pos\":0,\"name\":\"A\"},{\"type\":\"java.lang.String\",\"def_pos\":0,\"name\":\"B\"},{\"type\":\"dg.a\",\"def_pos\":0,\"name\":\"C\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"D\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"E\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"F\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"G\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"H\"},{\"type\":\"int\",\"def_pos\":0,\"name\":\"I\"},{\"type\":\"bq.d\",\"def_pos\":0,\"name\":\"f23833u\"},{\"type\":\"ch.b\",\"def_pos\":0,\"name\":\"f23834v\"},{\"type\":\"java.lang.Object\",\"def_pos\":0,\"name\":\"f23835w\"},{\"type\":\"boolean\",\"def_pos\":0,\"name\":\"f23836x\"},{\"type\":\"android.webkit.WebView\",\"def_pos\":0,\"name\":\"f23837y\"},{\"type\":\"java.lang.String\",\"def_pos\":0,\"name\":\"f23838z\"}]}"
+            }
+          ],
+          "isError": false
+        }
+      }
+    ]
+  },
+  "normalized_result": {
+    "engine": {
+      "name": "jadx-headless-mcp",
+      "version": "0.7.1",
+      "artifact_sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+      "source_revision": "5844800a486d2248fa949b74c9896285f5b54de2",
+      "worker_count": 1,
+      "heap_limit_mib": 8048
+    },
+    "class_name": "com.rahuls.scribbleio.ui.screens.main.CustomWebView",
+    "methods": [
+      {
+        "name": "<init>",
+        "reported_signature": "<init>(): void",
+        "overload_index": 0,
+        "is_constructor": true,
+        "dex_descriptor": "()V"
+      },
+      {
+        "name": "c",
+        "reported_signature": "c(): java.lang.Object",
+        "overload_index": 0,
+        "is_constructor": false,
+        "dex_descriptor": "()Ljava/lang/Object;"
+      },
+      {
+        "name": "d",
+        "reported_signature": "d(): androidx.lifecycle.z0",
+        "overload_index": 0,
+        "is_constructor": false,
+        "dex_descriptor": "()Landroidx/lifecycle/z0;"
+      },
+      {
+        "name": "onCreate",
+        "reported_signature": "onCreate(android.os.Bundle): void",
+        "overload_index": 0,
+        "is_constructor": false,
+        "dex_descriptor": "(Landroid/os/Bundle;)V"
+      },
+      {
+        "name": "onDestroy",
+        "reported_signature": "onDestroy(): void",
+        "overload_index": 0,
+        "is_constructor": false,
+        "dex_descriptor": "()V"
+      },
+      {
+        "name": "onPause",
+        "reported_signature": "onPause(): void",
+        "overload_index": 0,
+        "is_constructor": false,
+        "dex_descriptor": "()V"
+      },
+      {
+        "name": "onResume",
+        "reported_signature": "onResume(): void",
+        "overload_index": 0,
+        "is_constructor": false,
+        "dex_descriptor": "()V"
+      },
+      {
+        "name": "p",
+        "reported_signature": "p(int, androidx.compose.runtime.Composer): void",
+        "overload_index": 0,
+        "is_constructor": false,
+        "dex_descriptor": "(ILandroidx/compose/runtime/Composer;)V"
+      },
+      {
+        "name": "q",
+        "reported_signature": "q(): ch.b",
+        "overload_index": 0,
+        "is_constructor": false,
+        "dex_descriptor": "()Lch/b;"
+      },
+      {
+        "name": "r",
+        "reported_signature": "r(android.os.Bundle): void",
+        "overload_index": 0,
+        "is_constructor": false,
+        "dex_descriptor": "(Landroid/os/Bundle;)V"
+      },
+      {
+        "name": "s",
+        "reported_signature": "s(): void",
+        "overload_index": 0,
+        "is_constructor": false,
+        "dex_descriptor": "()V"
+      }
+    ],
+    "fields": [
+      {
+        "name": "A",
+        "reported_type": "java.lang.String"
+      },
+      {
+        "name": "B",
+        "reported_type": "java.lang.String"
+      },
+      {
+        "name": "C",
+        "reported_type": "dg.a"
+      },
+      {
+        "name": "D",
+        "reported_type": "long"
+      },
+      {
+        "name": "E",
+        "reported_type": "long"
+      },
+      {
+        "name": "F",
+        "reported_type": "long"
+      },
+      {
+        "name": "G",
+        "reported_type": "long"
+      },
+      {
+        "name": "H",
+        "reported_type": "long"
+      },
+      {
+        "name": "I",
+        "reported_type": "int"
+      },
+      {
+        "name": "f23833u",
+        "reported_type": "bq.d"
+      },
+      {
+        "name": "f23834v",
+        "reported_type": "ch.b"
+      },
+      {
+        "name": "f23835w",
+        "reported_type": "java.lang.Object"
+      },
+      {
+        "name": "f23836x",
+        "reported_type": "boolean"
+      },
+      {
+        "name": "f23837y",
+        "reported_type": "android.webkit.WebView"
+      },
+      {
+        "name": "f23838z",
+        "reported_type": "java.lang.String"
+      }
+    ],
+    "inner_classes": []
+  },
+  "confidence": "observed",
+  "authority": "shipped-artifact",
+  "environment": null,
+  "limitations": [
+    "Static decompiler observations do not establish runtime behavior; the APK is never executed.",
+    "Method signatures use provider display types; DEX prototypes come from frozen JADX metadata. Display names may be aliases, and overload indices are local to this engine and artifact.",
+    "Class inventories use parsed metadata before code generation, including synthetic members that may be omitted from decompiled source. Source positions remain unknown.",
+    "Incoming reference totals count JADX using nodes. Direct invoke entries within a using method report raw DEX code-unit offsets and method indexes, but coverage is limited to those nodes and directly matched invokes; it does not establish every possible dynamic or reflective call site.",
+    "Manifest summary fields are extracted by the upstream engine; decoded XML is retained for verification. APK signatures, split APKs, native libraries and Android runtime capture are not verified by this provider."
+  ],
+  "relationship_coverage": null,
+  "locations": [],
+  "evidence_links": []
+}

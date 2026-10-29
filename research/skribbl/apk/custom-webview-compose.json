@@ -1,0 +1,147 @@
+{
+  "evidence_id": "ev_cb792743114131f95eb80ae9115d17916feea99fb4704c729c1d25275b4fbadb",
+  "subject": {
+    "name": "Scribble & Guess.apk",
+    "digest": {
+      "sha256": "3022cadd35ab19b6715cc2ea62f765205d513b1c8692b660b57646f5535c78ff"
+    },
+    "local_path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "format": "apk",
+    "architecture": null
+  },
+  "provider": {
+    "id": "jadx",
+    "name": "JADX headless",
+    "version": "0.7.1"
+  },
+  "analysis_profile": null,
+  "predicate_type": "rea.analysis",
+  "operation": "inspect_android_method",
+  "parameters": {
+    "path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "class_name": "com.rahuls.scribbleio.ui.screens.main.CustomWebView",
+    "method_name": "p"
+  },
+  "raw_result": {
+    "server": {
+      "name": "rea-jadx-bridge",
+      "version": "4"
+    },
+    "bridge_sha256": "a02b1ef0a4a40abd1ae310b9ee686ca163e0b59a3256df524c35b90ed17e9e63",
+    "jar_sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+    "loaded": {
+      "state": "LOADED",
+      "apk_path": "C:\\Users\\vyasg\\AppData\\Local\\Temp\\rea-android-65debeaa07fddd1c504ee09d6505d610\\target.apk",
+      "class_count": 17541,
+      "resource_count": 740,
+      "threads": 1,
+      "resources": "full"
+    },
+    "calls": [
+      {
+        "operation": "rea_jvm_status",
+        "input": {},
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"metadata_scope\":\"parsed_members\",\"max_heap_bytes\":8438939648,\"java_version\":\"21.0.13\",\"available_processors\":22,\"engine_reported_version\":\"0.7.1\"}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "load_apk",
+        "input": {
+          "path": "C:\\Users\\vyasg\\AppData\\Local\\Temp\\rea-android-65debeaa07fddd1c504ee09d6505d610\\target.apk",
+          "threads": 1,
+          "resources": "full"
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"state\":\"LOADED\",\"apk_path\":\"C:\\\\Users\\\\vyasg\\\\AppData\\\\Local\\\\Temp\\\\rea-android-65debeaa07fddd1c504ee09d6505d610\\\\target.apk\",\"class_count\":17541,\"raw_class_count\":17541,\"resource_count\":740,\"load_duration_ms\":5684,\"decompile_timeout_ms\":90000,\"threads\":1,\"code_cache_size\":64,\"resources\":\"full\"}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "get_class_summary",
+        "input": {
+          "class_name": "com.rahuls.scribbleio.ui.screens.main.CustomWebView"
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"methods\":[{\"signature\":\"\\u003cinit\\u003e(): void\",\"def_pos\":0,\"name\":\"\\u003cinit\\u003e\",\"is_constructor\":true,\"dex_descriptor\":\"()V\"},{\"signature\":\"c(): java.lang.Object\",\"def_pos\":0,\"name\":\"c\",\"is_constructor\":false,\"dex_descriptor\":\"()Ljava/lang/Object;\"},{\"signature\":\"d(): androidx.lifecycle.z0\",\"def_pos\":0,\"name\":\"d\",\"is_constructor\":false,\"dex_descriptor\":\"()Landroidx/lifecycle/z0;\"},{\"signature\":\"onCreate(android.os.Bundle): void\",\"def_pos\":0,\"name\":\"onCreate\",\"is_constructor\":false,\"dex_descriptor\":\"(Landroid/os/Bundle;)V\"},{\"signature\":\"onDestroy(): void\",\"def_pos\":0,\"name\":\"onDestroy\",\"is_constructor\":false,\"dex_descriptor\":\"()V\"},{\"signature\":\"onPause(): void\",\"def_pos\":0,\"name\":\"onPause\",\"is_constructor\":false,\"dex_descriptor\":\"()V\"},{\"signature\":\"onResume(): void\",\"def_pos\":0,\"name\":\"onResume\",\"is_constructor\":false,\"dex_descriptor\":\"()V\"},{\"signature\":\"p(int, androidx.compose.runtime.Composer): void\",\"def_pos\":0,\"name\":\"p\",\"is_constructor\":false,\"dex_descriptor\":\"(ILandroidx/compose/runtime/Composer;)V\"},{\"signature\":\"q(): ch.b\",\"def_pos\":0,\"name\":\"q\",\"is_constructor\":false,\"dex_descriptor\":\"()Lch/b;\"},{\"signature\":\"r(android.os.Bundle): void\",\"def_pos\":0,\"name\":\"r\",\"is_constructor\":false,\"dex_descriptor\":\"(Landroid/os/Bundle;)V\"},{\"signature\":\"s(): void\",\"def_pos\":0,\"name\":\"s\",\"is_constructor\":false,\"dex_descriptor\":\"()V\"}],\"method_count\":11,\"inner_class_count\":0,\"inner_classes\":[],\"name\":\"CustomWebView\",\"full_name\":\"com.rahuls.scribbleio.ui.screens.main.CustomWebView\",\"field_count\":15,\"fields\":[{\"type\":\"java.lang.String\",\"def_pos\":0,\"name\":\"A\"},{\"type\":\"java.lang.String\",\"def_pos\":0,\"name\":\"B\"},{\"type\":\"dg.a\",\"def_pos\":0,\"name\":\"C\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"D\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"E\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"F\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"G\"},{\"type\":\"long\",\"def_pos\":0,\"name\":\"H\"},{\"type\":\"int\",\"def_pos\":0,\"name\":\"I\"},{\"type\":\"bq.d\",\"def_pos\":0,\"name\":\"f23833u\"},{\"type\":\"ch.b\",\"def_pos\":0,\"name\":\"f23834v\"},{\"type\":\"java.lang.Object\",\"def_pos\":0,\"name\":\"f23835w\"},{\"type\":\"boolean\",\"def_pos\":0,\"name\":\"f23836x\"},{\"type\":\"android.webkit.WebView\",\"def_pos\":0,\"name\":\"f23837y\"},{\"type\":\"java.lang.String\",\"def_pos\":0,\"name\":\"f23838z\"}]}"
+            }
+          ],
+          "isError": false
+        }
+      },
+      {
+        "operation": "get_method_body",
+        "input": {
+          "class_name": "com.rahuls.scribbleio.ui.screens.main.CustomWebView",
+          "method_name": "p",
+          "overload_index": 0,
+          "smali_fallback": true
+        },
+        "response": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"body\":\"    public final void p(int i10, Composer composer) {\\r\\n        q qVar;\\r\\n        q qVar2 \\u003d (q) composer;\\r\\n        qVar2.X(1482956143);\\r\\n        int i11 \\u003d (qVar2.h(this) ? 4 : 2) | i10;\\r\\n        if (qVar2.N(i11 \\u0026 1, (i11 \\u0026 3) !\\u003d 2)) {\\r\\n            Object objK \\u003d qVar2.K();\\r\\n            s0 s0Var \\u003d m.f42029a;\\r\\n            if (objK \\u003d\\u003d s0Var) {\\r\\n                objK \\u003d x0.b.r(Boolean.FALSE);\\r\\n                qVar2.g0(objK);\\r\\n            }\\r\\n            w0 w0Var \\u003d (w0) objK;\\r\\n            Object objK2 \\u003d qVar2.K();\\r\\n            if (objK2 \\u003d\\u003d s0Var) {\\r\\n                objK2 \\u003d x0.b.r(\\\"\\\");\\r\\n                qVar2.g0(objK2);\\r\\n            }\\r\\n            w0 w0Var2 \\u003d (w0) objK2;\\r\\n            Object objK3 \\u003d qVar2.K();\\r\\n            if (objK3 \\u003d\\u003d s0Var) {\\r\\n                objK3 \\u003d x0.b.l(qVar2);\\r\\n                qVar2.g0(objK3);\\r\\n            }\\r\\n            a0 a0Var \\u003d (a0) objK3;\\r\\n            boolean zA \\u003d k.a(ip.m.S0(f.d(\\\"web_view_enable_ads\\\")), Boolean.TRUE);\\r\\n            if (f.a(ng.a.f33323e) || !zA) {\\r\\n                qVar2.V(713243345);\\r\\n                boolean zH \\u003d qVar2.h(a0Var) | qVar2.h(this);\\r\\n                Object objK4 \\u003d qVar2.K();\\r\\n                if (zH || objK4 \\u003d\\u003d s0Var) {\\r\\n                    u uVar \\u003d new u(a0Var, w0Var2, this, null, 4);\\r\\n                    qVar2.g0(uVar);\\r\\n                    objK4 \\u003d uVar;\\r\\n                }\\r\\n                x0.b.e(qVar2, d0.f24919a, (Function2) objK4);\\r\\n            } else {\\r\\n                qVar2.V(704366867);\\r\\n            }\\r\\n            qVar2.p(false);\\r\\n            boolean zH2 \\u003d qVar2.h(this);\\r\\n            Object objK5 \\u003d qVar2.K();\\r\\n            if (zH2 || objK5 \\u003d\\u003d s0Var) {\\r\\n                objK5 \\u003d new s((Object) this, w0Var, w0Var2, 7);\\r\\n                qVar2.g0(objK5);\\r\\n            }\\r\\n            Function1 function1 \\u003d (Function1) objK5;\\r\\n            boolean zH3 \\u003d qVar2.h(this);\\r\\n            Object objK6 \\u003d qVar2.K();\\r\\n            if (zH3 || objK6 \\u003d\\u003d s0Var) {\\r\\n                objK6 \\u003d new lg.d(this, 2);\\r\\n                qVar2.g0(objK6);\\r\\n            }\\r\\n            qVar \\u003d qVar2;\\r\\n            androidx.compose.ui.viewinterop.a.b(function1, null, (Function1) objK6, qVar, 0, 2);\\r\\n            boolean zBooleanValue \\u003d ((Boolean) w0Var.getValue()).booleanValue();\\r\\n            boolean zH4 \\u003d qVar.h(this);\\r\\n            Object objK7 \\u003d qVar.K();\\r\\n            if (zH4 || objK7 \\u003d\\u003d s0Var) {\\r\\n                objK7 \\u003d new r0(11, this);\\r\\n                qVar.g0(objK7);\\r\\n            }\\r\\n            com.bumptech.glide.d.a(zBooleanValue, (rm.a) objK7, qVar, 0);\\r\\n            a().a(this, new b0(3, this));\\r\\n        } else {\\r\\n            qVar \\u003d qVar2;\\r\\n            qVar.Q();\\r\\n        }\\r\\n        o1 o1VarR \\u003d qVar.r();\\r\\n        if (o1VarR !\\u003d null) {\\r\\n            o1VarR.f42052d \\u003d new c(this, i10);\\r\\n        }\\r\\n    }\",\"markers\":[],\"fell_back\":false,\"full_name\":\"com.rahuls.scribbleio.ui.screens.main.CustomWebView.p\",\"overload_index\":0,\"method_name\":\"p\",\"overload_count\":1,\"dex_descriptor\":\"(ILandroidx/compose/runtime/Composer;)V\",\"class_name\":\"com.rahuls.scribbleio.ui.screens.main.CustomWebView\",\"mode\":\"java\"}"
+            }
+          ],
+          "isError": false
+        }
+      }
+    ]
+  },
+  "normalized_result": {
+    "engine": {
+      "name": "jadx-headless-mcp",
+      "version": "0.7.1",
+      "artifact_sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+      "source_revision": "5844800a486d2248fa949b74c9896285f5b54de2",
+      "worker_count": 1,
+      "heap_limit_mib": 8048
+    },
+    "class_name": "com.rahuls.scribbleio.ui.screens.main.CustomWebView",
+    "method": {
+      "name": "p",
+      "reported_signature": "p(int, androidx.compose.runtime.Composer): void",
+      "overload_index": 0,
+      "is_constructor": false,
+      "dex_descriptor": "(ILandroidx/compose/runtime/Composer;)V"
+    },
+    "overload_count": 1,
+    "representation": "java",
+    "body_status": "available",
+    "fell_back": false,
+    "markers": [],
+    "source": {
+      "status": "complete",
+      "text": "    public final void p(int i10, Composer composer) {\r\n        q qVar;\r\n        q qVar2 = (q) composer;\r\n        qVar2.X(1482956143);\r\n        int i11 = (qVar2.h(this) ? 4 : 2) | i10;\r\n        if (qVar2.N(i11 & 1, (i11 & 3) != 2)) {\r\n            Object objK = qVar2.K();\r\n            s0 s0Var = m.f42029a;\r\n            if (objK == s0Var) {\r\n                objK = x0.b.r(Boolean.FALSE);\r\n                qVar2.g0(objK);\r\n            }\r\n            w0 w0Var = (w0) objK;\r\n            Object objK2 = qVar2.K();\r\n            if (objK2 == s0Var) {\r\n                objK2 = x0.b.r(\"\");\r\n                qVar2.g0(objK2);\r\n            }\r\n            w0 w0Var2 = (w0) objK2;\r\n            Object objK3 = qVar2.K();\r\n            if (objK3 == s0Var) {\r\n                objK3 = x0.b.l(qVar2);\r\n                qVar2.g0(objK3);\r\n            }\r\n            a0 a0Var = (a0) objK3;\r\n            boolean zA = k.a(ip.m.S0(f.d(\"web_view_enable_ads\")), Boolean.TRUE);\r\n            if (f.a(ng.a.f33323e) || !zA) {\r\n                qVar2.V(713243345);\r\n                boolean zH = qVar2.h(a0Var) | qVar2.h(this);\r\n                Object objK4 = qVar2.K();\r\n                if (zH || objK4 == s0Var) {\r\n                    u uVar = new u(a0Var, w0Var2, this, null, 4);\r\n                    qVar2.g0(uVar);\r\n                    objK4 = uVar;\r\n                }\r\n                x0.b.e(qVar2, d0.f24919a, (Function2) objK4);\r\n            } else {\r\n                qVar2.V(704366867);\r\n            }\r\n            qVar2.p(false);\r\n            boolean zH2 = qVar2.h(this);\r\n            Object objK5 = qVar2.K();\r\n            if (zH2 || objK5 == s0Var) {\r\n                objK5 = new s((Object) this, w0Var, w0Var2, 7);\r\n                qVar2.g0(objK5);\r\n            }\r\n            Function1 function1 = (Function1) objK5;\r\n            boolean zH3 = qVar2.h(this);\r\n            Object objK6 = qVar2.K();\r\n            if (zH3 || objK6 == s0Var) {\r\n                objK6 = new lg.d(this, 2);\r\n                qVar2.g0(objK6);\r\n            }\r\n            qVar = qVar2;\r\n            androidx.compose.ui.viewinterop.a.b(function1, null, (Function1) objK6, qVar, 0, 2);\r\n            boolean zBooleanValue = ((Boolean) w0Var.getValue()).booleanValue();\r\n            boolean zH4 = qVar.h(this);\r\n            Object objK7 = qVar.K();\r\n            if (zH4 || objK7 == s0Var) {\r\n                objK7 = new r0(11, this);\r\n                qVar.g0(objK7);\r\n            }\r\n            com.bumptech.glide.d.a(zBooleanValue, (rm.a) objK7, qVar, 0);\r\n            a().a(this, new b0(3, this));\r\n        } else {\r\n            qVar = qVar2;\r\n            qVar.Q();\r\n        }\r\n        o1 o1VarR = qVar.r();\r\n        if (o1VarR != null) {\r\n            o1VarR.f42052d = new c(this, i10);\r\n        }\r\n    }",
+      "reported_total_bytes": null
+    }
+  },
+  "confidence": "derived",
+  "authority": "shipped-artifact",
+  "environment": null,
+  "limitations": [
+    "Static decompiler observations do not establish runtime behavior; the APK is never executed.",
+    "Method signatures use provider display types; DEX prototypes come from frozen JADX metadata. Display names may be aliases, and overload indices are local to this engine and artifact.",
+    "Class inventories use parsed metadata before code generation, including synthetic members that may be omitted from decompiled source. Source positions remain unknown.",
+    "Incoming reference totals count JADX using nodes. Direct invoke entries within a using method report raw DEX code-unit offsets and method indexes, but coverage is limited to those nodes and directly matched invokes; it does not establish every possible dynamic or reflective call site.",
+    "Manifest summary fields are extracted by the upstream engine; decoded XML is retained for verification. APK signatures, split APKs, native libraries and Android runtime capture are not verified by this provider."
+  ],
+  "relationship_coverage": null,
+  "locations": [],
+  "evidence_links": []
+}
