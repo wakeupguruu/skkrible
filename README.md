@@ -36,9 +36,12 @@ npm run build
 # With both development servers running:
 npm run test:integration
 npm run test:browser
+npm run test:load
 ```
 
 The tests cover engine rules, answer privacy, duplicate commands, real WebSocket disconnect/reconnects, a complete browser game, safe chat rendering, desktop/mobile layouts, and touch input. An actual local backend restart was also checked against saved seat, score, and drawing data.
+
+The [local verification report](docs/verification/README.md) includes the 100-client run: five rooms, 300 committed strokes, 50 recovered connections, and 69 ms p95 local drawing delivery. These are local emulator results, not a hosted latency promise.
 
 Screenshots and local test state are ignored under `.tools`/`test-results`. Tool versions are pinned in `package-lock.json`. No skribbl.io source or assets are imported by the app; earlier artifact research is kept separately under `research`.
 

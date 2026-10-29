@@ -1,0 +1,30 @@
+{
+  "testedAt": "2026-10-29T23:19:34.814Z",
+  "environment": "Local Windows Cloudflare Wrangler/Miniflare emulator; not deployed-provider capacity or Internet latency.",
+  "node": "v24.21.0",
+  "concurrentClients": 100,
+  "rooms": 5,
+  "clientsPerRoom": 20,
+  "activeDrawers": 5,
+  "completedStrokes": 300,
+  "pointsPerStroke": 20,
+  "restoredConnections": 50,
+  "restoredScoredConnections": 5,
+  "drawingFanout": {
+    "samples": 5700,
+    "p50_ms": 26.71,
+    "p95_ms": 69.03,
+    "p99_ms": 81.43,
+    "max_ms": 88.71
+  },
+  "commandAcknowledgements": {
+    "samples": 300,
+    "p50_ms": 30.63,
+    "p95_ms": 77.33,
+    "p99_ms": 89.37,
+    "max_ms": 89.44
+  },
+  "reconnectWaveMs": 2898,
+  "durationSeconds": 19,
+  "limitations": "Short synthetic local test. Does not measure phone hardware, geographically distant players, long-running free-tier usage, quota exhaustion, or provider outages."
+}
