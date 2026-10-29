@@ -6,6 +6,10 @@ test('origins and unsupported endpoints are rejected at the transport boundary',
   assert.equal((await fetch(`${BACKEND}/health`)).status, 200);
   assert.equal((await fetch(`${BACKEND}/api/rooms`, { method: 'POST', headers: { Origin: 'https://untrusted.example' } })).status, 403);
   assert.equal((await fetch(`${BACKEND}/missing`, { headers: { Origin: ORIGIN } })).status, 404);
+  const code = await newRoom();
+  const info = await fetch(`${BACKEND}/api/rooms/${code}`, { headers: { Origin: ORIGIN } });
+  assert.deepEqual(await info.json(), { code, available: true });
+  assert.equal((await fetch(`${BACKEND}/api/rooms/AAAAAAAA`, { headers: { Origin: ORIGIN } })).status, 404);
 });
 
 test('live clients share drawing and recover the same player after a transport loss', async t => {

@@ -31,6 +31,11 @@ export default {
       }
       return json({ error: 'Couldn’t create a room. Please try again.' }, 503, cors);
     }
+    const info = url.pathname.match(/^\/api\/rooms\/([A-Z2-9]+)$/);
+    if (request.method === 'GET' && info && CODE.test(info[1])) {
+      const result = await env.ROOMS.get(env.ROOMS.idFromName(info[1])).fetch(new Request('https://room/info'));
+      return new Response(result.body, { status: result.status, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+    }
     const match = url.pathname.match(/^\/api\/rooms\/([A-Z2-9]+)\/socket$/);
     if (request.method === 'GET' && match && CODE.test(match[1]) && request.headers.get('Upgrade')?.toLowerCase() === 'websocket') {
       return env.ROOMS.get(env.ROOMS.idFromName(match[1])).fetch(request);
@@ -80,6 +85,7 @@ export class GameRoom extends DurableObject {
     if (!this.room) return;
     let next = nextAlarm(this.room);
     for (const socket of this.ctx.getWebSockets()) {
+      if (socket.readyState !== 1) continue;
       const attachment = socket.deserializeAttachment();
       if (!attachment?.playerId) next = Math.min(next, attachment.acceptedAt + 15_000);
     }
@@ -98,6 +104,7 @@ export class GameRoom extends DurableObject {
       return json({ code }, 201);
     }
     if (!this.room || Date.now() >= this.room.expiresAt) return json({ error: 'This room is missing or expired.' }, 404);
+    if (url.pathname === '/info') return json({ code: this.room.code, available: true });
     if (this.ctx.getWebSockets().length >= 40) return json({ error: 'Too many room connections.' }, 429);
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
