@@ -1,0 +1,77 @@
+{
+  "source": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+  "method": "Standard-library DEX tables and aligned instruction-pattern candidates; no decompilation or target execution. Patterns may match instruction operands; candidates are not verified call sites.",
+  "dex": [
+    {
+      "file": "classes.dex",
+      "string_count": 48100,
+      "class_count": 12671,
+      "app_classes": [],
+      "target_strings": [
+        "https://scribble.algodextrous.me/",
+        "scribble.algodextrous.me"
+      ],
+      "references": [
+        {
+          "class": "Lcom/bumptech/glide/d;",
+          "method": "c",
+          "code_offset": 4403208,
+          "candidates": [
+            {
+              "code_unit": 160,
+              "string": "https://scribble.algodextrous.me/"
+            }
+          ]
+        },
+        {
+          "class": "Lc0/t;",
+          "method": "b",
+          "code_offset": 2102392,
+          "candidates": [
+            {
+              "code_unit": 106,
+              "string": "scribble.algodextrous.me"
+            },
+            {
+              "code_unit": 124,
+              "string": "https://scribble.algodextrous.me/"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "classes2.dex",
+      "string_count": 40949,
+      "class_count": 6529,
+      "app_classes": [
+        "Lcom/rahuls/scribbleio/ScribbleDrawApplication;",
+        "Lcom/rahuls/scribbleio/initializer/AdsInitializer;",
+        "Lcom/rahuls/scribbleio/initializer/CrashlyticsInitializer;",
+        "Lcom/rahuls/scribbleio/initializer/PlayGamesInitializer;",
+        "Lcom/rahuls/scribbleio/initializer/StreamChatInitializer;",
+        "Lcom/rahuls/scribbleio/initializer/TimberInitializer;",
+        "Lcom/rahuls/scribbleio/services/MyFirebaseMessagingService;",
+        "Lcom/rahuls/scribbleio/ui/screens/game/GameActivity;",
+        "Lcom/rahuls/scribbleio/ui/screens/main/CustomWebView;",
+        "Lcom/rahuls/scribbleio/ui/screens/main/MainActivity;"
+      ],
+      "target_strings": [
+        "skribbl.io"
+      ],
+      "references": [
+        {
+          "class": "Llg/h;",
+          "method": "onConsoleMessage",
+          "code_offset": 3616048,
+          "candidates": [
+            {
+              "code_unit": 49,
+              "string": "skribbl.io"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

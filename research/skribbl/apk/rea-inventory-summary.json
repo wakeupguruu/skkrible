@@ -1,0 +1,116 @@
+{
+  "evidence_id": "ev_de08c25fd50b01c837c85c8f7a222afa9f91d42141dc51c3279b62203bdf9d88",
+  "subject": {
+    "name": "Scribble & Guess.apk",
+    "digest": {
+      "sha256": "3022cadd35ab19b6715cc2ea62f765205d513b1c8692b660b57646f5535c78ff"
+    },
+    "local_path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+    "format": "apk",
+    "architecture": null
+  },
+  "provider": {
+    "id": "rea-analysis-view",
+    "name": "REA analysis view projection",
+    "version": "1"
+  },
+  "analysis_profile": null,
+  "predicate_type": "rea.analysis-view",
+  "operation": "inspect_analysis_view",
+  "parameters": {
+    "parent_evidence_id": "ev_0544274cc402304d9a44cfb7ddd73fc63c1cbce11411ee055d79edbc0e870cc2",
+    "view": {
+      "kind": "summary"
+    }
+  },
+  "raw_result": null,
+  "normalized_result": {
+    "kind": "summary",
+    "view": {
+      "kind": "summary"
+    },
+    "parent_evidence_id": "ev_0544274cc402304d9a44cfb7ddd73fc63c1cbce11411ee055d79edbc0e870cc2",
+    "parent_operation": "inspect_artifact",
+    "parent_digest": "0544274cc402304d9a44cfb7ddd73fc63c1cbce11411ee055d79edbc0e870cc2",
+    "view_digest": "a953f852ecff7174a1c485d0491492d18efade7e34d2602783ee197042875279",
+    "artifact": {
+      "path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk",
+      "sha256": "3022cadd35ab19b6715cc2ea62f765205d513b1c8692b660b57646f5535c78ff"
+    },
+    "coverage": {
+      "status": "complete-within-view",
+      "examined": 2128,
+      "total": 2128,
+      "next_offset": null,
+      "exhausted": true
+    },
+    "limitations": [
+      "Inspection derives bounded static hypotheses and next probes; it does not execute the artifact or claim format-specific semantics.",
+      "ZIP inventory lists central-directory entries only. Non-entry bytes, including an APK Signing Block before the central directory or a ZIP comment after it, are not occurrences."
+    ],
+    "unknowns": [
+      "Inventory does not establish application runtime behavior or complete format-specific analysis."
+    ],
+    "summary": {
+      "manifest": {
+        "manifest_id": "agm_778e233eae720b013fd64bba1e68d649ba68949b2b2b66eaa18379cbbafcef67",
+        "root_artifact_id": "art_a5581a4063b46299c454d422ec4cfa6d60e3c125041b53b8740c2b0205aa36a9",
+        "root_sha256": "3022cadd35ab19b6715cc2ea62f765205d513b1c8692b660b57646f5535c78ff",
+        "root_format": "apk",
+        "graph_sha256": "d6a5571cffe4e4aaadcc4776a2d01089b7cf946f1ee0c19d02c6abec313aece7",
+        "node_count": 647,
+        "occurrence_count": 741,
+        "edge_count": 740
+      },
+      "available_counts": {
+        "nodes": 647,
+        "occurrences": 741,
+        "edges": 740,
+        "integrity_contradictions": 0
+      },
+      "observed_entry_kind_counts": {
+        "file": 741,
+        "directory": 0,
+        "symlink": 0,
+        "slice": 0
+      },
+      "source_complete": true,
+      "inventory_evidence_ids": [
+        "ev_140120a2fb02e1731d3e20436d8e9450e924b86d798bf503edee50f76e308434"
+      ],
+      "inspection": {
+        "coverage": {
+          "status": "complete-within-substeps",
+          "substeps_completed": 1,
+          "observations_retained": 1,
+          "observations_omitted": 0,
+          "hypotheses_retained": 0,
+          "hypotheses_omitted": 0,
+          "unexplored_branches_retained": 0,
+          "unexplored_branches_omitted": 0,
+          "next_probes_retained": 0,
+          "next_probes_omitted": 0
+        },
+        "unexplored_branches": []
+      },
+      "limitation_count": 2
+    }
+  },
+  "confidence": "derived",
+  "authority": "shipped-artifact",
+  "environment": null,
+  "limitations": [
+    "Inspection derives bounded static hypotheses and next probes; it does not execute the artifact or claim format-specific semantics.",
+    "ZIP inventory lists central-directory entries only. Non-entry bytes, including an APK Signing Block before the central directory or a ZIP comment after it, are not occurrences."
+  ],
+  "relationship_coverage": null,
+  "locations": [
+    {
+      "kind": "artifact-path",
+      "path": "C:\\Users\\vyasg\\Downloads\\kde\\Scribble & Guess.apk"
+    }
+  ],
+  "evidence_links": [
+    "ev_0544274cc402304d9a44cfb7ddd73fc63c1cbce11411ee055d79edbc0e870cc2"
+  ]
+}
