@@ -149,7 +149,8 @@ export function nextAlarm(room, now = Date.now()) {
   const alarms = [room.expiresAt];
   if (room.deadline) alarms.push(room.deadline);
   if (room.disconnectDeadline) alarms.push(room.disconnectDeadline);
-  if (room.phase === 'drawing' && room.settings.hints > room.hintsRevealed) {
+  const availableHints = Math.min(room.settings.hints, Math.max(0, room.hintOrder.length - 1));
+  if (room.phase === 'drawing' && availableHints > room.hintsRevealed) {
     alarms.push(room.drawingStartedAt + room.settings.drawTime * 1000 * (0.4 + 0.5 * (room.hintsRevealed + 1) / room.settings.hints));
   }
   return Math.max(now + 100, Math.min(...alarms));

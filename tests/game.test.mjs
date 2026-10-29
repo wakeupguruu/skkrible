@@ -125,3 +125,12 @@ test('joining mid-game adds the new player to the rotation without leaking the a
   assert.ok(f.room.order.includes(newcomer.id));
   assert.equal(view(f.room, newcomer.id).word, '');
 });
+
+test('a short word does not schedule repeated alarms for impossible extra hints', () => {
+  const f = fixture();
+  send(f.room, f.host, 'settings', { settings: { ...f.room.settings, hints: 3, customOnly: true, customWords: 'ax,be,do,ex,go' } });
+  drawing(f);
+  tick(f.room, 70_000);
+  assert.equal(f.room.hintsRevealed, 1);
+  assert.equal(nextAlarm(f.room, 70_000), f.room.deadline);
+});
