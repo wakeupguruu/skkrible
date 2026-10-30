@@ -1,6 +1,6 @@
 # Skkrible
 
-A friends-only drawing and guessing game. Make a private room, send the invite, and take turns drawing. The compact blue interface keeps the board, room controls, players, and 18px chat within one screen on phones and laptops. Chat and player lists scroll internally.
+A friends-only drawing and guessing website. On phones, the board sits above side-by-side standings and successful guesses, with a full-width guess input at the bottom. On laptops, players and guesses flank the board. Lists scroll internally while the game stays within one screen.
 
 ## Run locally
 
@@ -19,13 +19,15 @@ Open http://127.0.0.1:5173. Open another browser profile or private window to jo
 
 - Private invite links and 2–20 player rooms, with avatars and host settings.
 - A face builder with 800 color/eyes/mouth/accessory combinations, saved in your browser.
-- Room controls directly in the canvas area: rounds, drawing time, 1–5 word choices, easy/normal/hard vocabulary, 0–5 letter hints, and custom words. Starting saves the visible settings first.
+- Room controls directly in the canvas area: rounds, drawing time, 1–5 word choices, easy/normal/hard vocabulary, and 0–5 letter hints. Starting saves the visible settings first.
 - A countdown ring, urgency animation, turn progress, word length, and next-letter-hint countdown. Letter hints arrive at evenly spaced server deadlines; at least one letter stays hidden.
-- Turn-based word selection, hints, server-owned scoring, custom words, and results.
+- Ranked standings with a pencil and active-artist marker, per-turn point results between drawings, and server-owned scores.
+- Only successful guesses appear in the shared feed. Wrong guesses stay private; a single-letter typo (including adjacent swaps) gets a private “close” message.
+- Vote-kicking requires a majority of the other connected seats, with at least two distinct votes. The host has no direct removal privilege. Tap a player’s name to open the vote.
 - Mouse, pen, and touch drawing; colors, sizes, eraser, undo, and clear.
 - Live ink previews and durable completed strokes.
 - Automatic reconnect with backoff, restored seats/scores/boards, and replay of unacknowledged commands.
-- Server-side command deduplication, role checks, bounded messages, and text-only chat rendering.
+- Server-side command deduplication, role checks, bounded guesses, and text-only notification rendering.
 - Host handoff when disconnected and room pause when everyone is away.
 
 Room storage lives in each backend Durable Object's SQLite database. Scores are per-room and persist with the room across hibernation and server restarts. Rooms expire after 24 hours without accepted commands or joins. There is no separate database service, account system, or global leaderboard.

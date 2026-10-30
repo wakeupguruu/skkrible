@@ -1,6 +1,6 @@
 # Release checks
 
-Latest release: [compact game UI, inline settings, custom faces, and hosted verification](ui-redesign.md). The record below describes the initial release.
+Latest release: [phone reference layout, private guesses, turn points, and voting](phone-layout.md). Previous UI release: [compact game UI and custom faces](ui-redesign.md). The record below describes the initial release.
 
 Verified 30 October 2026 on Windows with Node 24.21.0, Wrangler 4.156.0, Vite 8.3.5, Playwright 1.64.1, and installed Google Chrome. The frontend and backend were running locally.
 
