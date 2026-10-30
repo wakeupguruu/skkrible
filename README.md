@@ -47,7 +47,11 @@ Screenshots and local test state are ignored under `.tools`/`test-results`. Tool
 
 ## Hosting
 
-The frontend is ready for Vercel's free static hosting using the root `vercel.json`. The backend is a Cloudflare Worker with SQLite-backed Durable Objects, compatible with its free tier. Deployment is not complete until both services are connected to your accounts and configured with their real URLs.
+The website is live at **https://skkrible.vercel.app**. Its multiplayer backend is **https://skkrible-rooms.vyasguru44.workers.dev**. Vercel is connected to this GitHub repository and its production `VITE_BACKEND_URL` is saved in the project settings. The backend uses SQLite-backed Durable Objects; room scores need no separate database.
+
+The root `vercel.json` configures the frontend build. Backend changes must be deployed separately with Wrangler or the connected Cloudflare MCP; a GitHub push to Vercel does not deploy the backend. The deployed Worker uses sampled logs (10%) and traces (1%) for diagnostics. Preview origins are intentionally not in the backend allowlist.
+
+To reproduce the deployment in another account:
 
 1. Deploy the backend with `npx wrangler deploy --config apps/backend/wrangler.jsonc` while using a Cloudflare Workers **Free** account.
 2. Import this repository into Vercel. Keep the root directory at the repository root; build/output settings are in `vercel.json`.

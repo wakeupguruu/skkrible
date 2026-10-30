@@ -1,4 +1,4 @@
-# Local release checks
+# Release checks
 
 Verified 30 October 2026 on Windows with Node 24.21.0, Wrangler 4.156.0, Vite 8.3.5, Playwright 1.64.1, and installed Google Chrome. The frontend and backend were running locally.
 
@@ -32,8 +32,28 @@ The reproducible command is `npm run test:load` while the local backend is runni
 
 Every observer received the final stroke in its room. Restored seats retained their IDs and complete committed drawings without receiving the secret answer. Scored players retained the exact score on a second reconnection. The browser suite was also running during this load test.
 
-This is a short, synthetic localhost test. It demonstrates the implemented 100-client scenario, not sustained free-tier capacity, production latency, physical mobile-device performance, provider uptime, or behavior after daily quota exhaustion. Hosted checks remain necessary after deployment.
+This is a short, synthetic localhost test. It demonstrates the implemented 100-client scenario, not sustained free-tier capacity, production latency, physical mobile-device performance, provider uptime, or behavior after daily quota exhaustion. The 100-client run has not been repeated against production.
 
 ## Deployment state
 
-The app is locally buildable and tested, with Vercel frontend and Cloudflare backend configuration prepared. No paid service was enabled. Cloudflare CLI reported that no account was authenticated; Vercel CLI 65.8.0 also reported logged out. A live public release has not been verified.
+Deployed and verified on 30 October 2026:
+
+- Website: https://skkrible.vercel.app (unauthenticated HTTP 200 and the expected game HTML).
+- Backend: https://skkrible-rooms.vyasguru44.workers.dev, Worker `skkrible-rooms`, SQLite Durable Object `GameRoom`, migration `v1`.
+- Initial Cloudflare deployment ID: `8b3fd7f753724415b5066a77bd08fb5f`, uploaded through the authenticated Cloudflare MCP using Wrangler's validated bundle.
+- Initial Vercel deployment: `dpl_6fMfsQ86q4WbiuqBMHf8spKKATo8`, Hobby plan. Production backend URL is saved in Vercel and GitHub integration is connected.
+- All 3 real WebSocket tests passed against the deployed backend with the production Origin: boundary checks, exact drawing restoration, seat/score recovery, and duplicate command handling (9.2 seconds).
+- All 3 Chrome browser tests passed against the live website: complete game, disconnect/reconnect, reload, safe chat, final scores, explicit leave, mobile touch/keyboard layout, and invalid invite (40.8 seconds). No page errors were reported by the covered game scenarios.
+- All 9 game-rule tests and both production builds passed before deployment. No paid plan or subscription was enabled. The existing Vercel access settings were left unchanged after the canonical production URL was confirmed public.
+
+To rerun the deployed checks from PowerShell:
+
+```powershell
+$env:TEST_BACKEND_URL = 'https://skkrible-rooms.vyasguru44.workers.dev'
+$env:TEST_ORIGIN = 'https://skkrible.vercel.app'
+npm.cmd run test:integration
+$env:TEST_BASE_URL = 'https://skkrible.vercel.app'
+npm.cmd run test:browser
+```
+
+These tests create temporary test rooms that expire after 24 hours. Hosted checks used one Windows machine with separate Chrome contexts and mobile emulation. Physical phones, multiple geographic regions, extended outages, sustained 100-player production traffic, and free-tier exhaustion remain unverified.
