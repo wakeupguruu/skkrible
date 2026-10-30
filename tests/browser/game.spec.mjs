@@ -65,6 +65,7 @@ test('a private match restores a dropped seat, keeps draft text, and completes w
     await expect(page.locator('.word-choice')).toHaveCount(5);
     const word = await choose(page);
     await expect(page.locator('#timer-value')).toHaveText(/\d+/);
+    await expect(page.locator('.player.drawing .player-activity')).toHaveText('✎ Drawing');
     await expect(friend.locator('#hint-status')).toContainText('next in');
     await fitsScreen(page);
     await page.setViewportSize({ width: 1366, height: 768 });
@@ -107,13 +108,22 @@ test('a private match restores a dropped seat, keeps draft text, and completes w
     }).toBeTruthy();
     await friend.locator('#chat-input').fill('<img src=x onerror=alert(1)>');
     await friend.locator('#chat-input').press('Enter');
-    await expect(page.locator('.chat-body').last()).toHaveText('<img src=x onerror=alert(1)>');
-    await expect(page.locator('.chat-body img')).toHaveCount(0);
-    await expect(page.locator('.chat-body').last()).toHaveCSS('font-size', '18px');
+    await expect(friend.locator('#guess-feedback')).toHaveText('Not quite. Try again.');
+    await expect(page.locator('.chat-message')).toHaveCount(0);
+    await expect(page.locator('#chat-messages img')).toHaveCount(0);
+    await friend.locator('#chat-input').fill((word[0] === 'z' ? 'x' : 'z') + word.slice(1));
+    await friend.locator('#chat-input').press('Enter');
+    await expect(friend.locator('#guess-feedback')).toContainText('You’re close!');
+    await expect(page.locator('.chat-message')).toHaveCount(0);
     await expect(friend.locator('#hint-status')).toContainText('Hint 1/', { timeout: 12_000 });
     await friend.locator('#chat-input').fill(word);
     await friend.locator('#chat-input').press('Enter');
-    await expect(friend.locator('.chat-message.correct')).toContainText('Bob guessed it!');
+    await expect(friend.locator('.chat-message.correct')).toHaveText('Bob guessed the word!');
+    await expect(friend.locator('.chat-message.correct')).toHaveCSS('font-size', '18px');
+    await expect(page.getByRole('heading', { name: 'Points this turn' })).toBeVisible();
+    await expect(page.locator('.turn-result')).toHaveCount(2);
+    await expect(page.locator('#timer.is-points')).toHaveAttribute('role', 'status');
+    await expect(page.locator('#timer-value')).toHaveText('+50');
     await friend.reload();
     await expect(friend.locator('#game')).toBeVisible();
     await expect(friend.locator('#player-count')).toHaveText('2 / 12');
@@ -144,6 +154,12 @@ test('mobile lobby and touch drawing fit the viewport and keep chat readable', a
     const code = await create(page, 'Mobile artist');
     await join(friend, 'Desktop friend', code);
     await fitsScreen(page);
+    const players = await page.locator('.players-panel').boundingBox(), chat = await page.locator('.chat-panel').boundingBox();
+    const boardPanel = await page.locator('.drawing-panel').boundingBox(), input = await page.locator('#chat-form').boundingBox();
+    expect(players.x + players.width).toBeLessThanOrEqual(chat.x + 1);
+    expect(Math.abs(players.y - chat.y)).toBeLessThan(1);
+    expect(boardPanel.y + boardPanel.height).toBeLessThanOrEqual(players.y + 1);
+    expect(input.x).toBe(0); expect(input.width).toBe(390);
     await page.screenshot({ path: '.tools/ui-lobby-mobile.png' });
     await page.getByRole('button', { name: 'Start game' }).click();
     const word = await choose(page);
@@ -160,6 +176,8 @@ test('mobile lobby and touch drawing fit the viewport and keep chat readable', a
     await page.screenshot({ path: '.tools/ui-room-mobile.png', fullPage: true });
     await friend.locator('#chat-input').fill(word);
     await friend.locator('#chat-input').press('Enter');
+    await expect(page.getByRole('heading', { name: 'Points this turn' })).toBeVisible();
+    await page.screenshot({ path: '.tools/ui-turn-points-mobile.png' });
     await choose(friend);
     await page.locator('#chat-input').focus();
     await page.setViewportSize({ width: 390, height: 500 });
@@ -208,7 +226,8 @@ test('home and lobby controls fit small phones, laptop, desktop, and landscape w
   await create(page, 'Layout check');
   for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 1366, height: 768 }, { width: 844, height: 390 }]) {
     await page.setViewportSize(viewport); await fitsScreen(page);
-    for (const selector of ['#settings-form select', '#custom-words', '#start-game']) {
+    await expect(page.locator('#custom-words')).toHaveCount(0);
+    for (const selector of ['#settings-form select', '#start-game']) {
       for (const control of await page.locator(selector).all()) {
         const rect = await control.boundingBox();
         const panel = await page.locator('#lobby-panel').boundingBox();
@@ -218,4 +237,26 @@ test('home and lobby controls fit small phones, laptop, desktop, and landscape w
       }
     }
   }
+});
+
+test('player actions require two votes and give the host no direct removal control', async ({ browser, page }) => {
+  const code = await create(page, 'Vote host');
+  const secondContext = await browser.newContext(), thirdContext = await browser.newContext();
+  const second = await secondContext.newPage(), third = await thirdContext.newPage();
+  try {
+    await join(second, 'Vote target', code); await join(third, 'Other voter', code);
+    await expect(page.locator('.kick-button')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Player actions for Vote target', exact: true }).click();
+    await expect(page.locator('#vote-count')).toContainText('0 / 2 votes');
+    await page.getByRole('button', { name: 'Vote to kick', exact: true }).click();
+    await expect(page.locator('#vote-count')).toContainText('1 / 2 votes');
+    await expect(page.locator('#vote-kick-button')).toBeDisabled();
+    await expect(page.locator('#player-count')).toHaveText('3 / 12');
+    await third.getByRole('button', { name: 'Player actions for Vote target', exact: true }).click();
+    await third.getByRole('button', { name: 'Vote to kick', exact: true }).click();
+    await expect(page.locator('#player-count')).toHaveText('2 / 12');
+    await expect(second.locator('#connection-status')).toHaveText('Connection ended');
+    await expect(second.locator('#toast')).toHaveText('Removed by room vote');
+    await expect(page.locator('#player-dialog')).toBeHidden();
+  } finally { await secondContext.close(); await thirdContext.close(); }
 });

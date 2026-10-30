@@ -41,7 +41,7 @@
         <p class="home-caption">Private rooms. No accounts. Just play.</p>
       </section>
       <section id="game" class="game" hidden aria-label="Private game room">
-        <div class="room-topbar">
+        <div class="room-topbar" id="room-menu">
           <div class="room-code-label">Room <button id="copy-room-code" class="code-button" title="Copy invite link"></button><button id="copy-invite" class="text-button">Invite friends ↗</button></div>
           <div class="room-actions"><span id="connection-status" class="connection-status" role="status">Connecting…</span><button id="settings-button" class="text-button" title="Show room settings">Settings</button><button id="leave-room" class="text-button">Leave</button></div>
         </div>
@@ -49,9 +49,9 @@
           <aside class="players-panel panel" aria-label="Players and room scores"><div class="panel-heading"><h2>Players</h2><span id="player-count" class="count-badge">0 / 12</span></div><div id="players-list" class="players-list"></div></aside>
           <section class="drawing-panel" aria-label="Drawing board">
             <div class="game-hud">
-              <div class="timer" id="timer" role="timer" aria-label="No active timer"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="timer-track" cx="32" cy="32" r="27"/><circle id="timer-ring" cx="32" cy="32" r="27"/></svg><strong id="timer-value">—</strong></div>
-              <div class="word-banner"><span id="word-label">ROOM SETUP</span><strong id="word-display">Waiting for friends</strong><span id="hint-status"></span></div>
-              <div class="round-info"><strong id="round-label">LOBBY</strong><span id="turn-label">Invite friends to play</span></div>
+              <div class="timer-group"><div class="timer" id="timer" role="timer" aria-label="No active timer"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="timer-track" cx="32" cy="32" r="27"/><circle id="timer-ring" cx="32" cy="32" r="27"/></svg><strong id="timer-value">—</strong></div><strong id="round-label">LOBBY</strong></div>
+              <div class="word-banner"><span id="word-label">ROOM SETUP</span><strong id="word-display">Waiting for friends</strong><span id="hint-status"></span><span id="turn-label" class="turn-label">Invite friends to play</span></div>
+              <button id="room-menu-button" class="room-menu-button" aria-label="Room menu" aria-controls="room-menu" aria-expanded="false">⚙</button>
               <div class="round-progress"><div id="round-progress"></div></div>
             </div>
             <div class="board-stage">
@@ -71,9 +71,6 @@
                     <label>Difficulty<select name="difficulty"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></label>
                     <label>Letter hints<select name="hints"><option value="0">Off</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></label>
                   </div>
-                  <label class="custom-label" for="custom-words">Custom words <span>optional · separate with commas</span></label>
-                  <textarea id="custom-words" name="customWords" maxlength="4000" rows="2" placeholder="pizza, inside joke, favorite place…"></textarea>
-                  <label class="checkbox-label"><input type="checkbox" name="customOnly" /> Custom words only <span>(at least 5)</span></label>
                   <p id="settings-error" class="form-error" role="alert"></p>
                   <div class="lobby-buttons"><button class="secondary-button" id="save-settings" type="submit">Save room settings</button><button class="primary-button" id="start-game" type="submit">Start game ▶</button></div>
                 </form>
@@ -82,12 +79,14 @@
             </div>
             <div class="drawing-toolbar"><div class="tool-group"><button id="pen-tool" class="tool-button selected" aria-label="Pen" aria-pressed="true" title="Pen (B)">✎</button><button id="eraser-tool" class="tool-button" aria-label="Eraser" aria-pressed="false" title="Eraser (E)">▱</button><button id="undo-button" class="tool-button" aria-label="Undo last stroke" title="Undo (Ctrl+Z)">↶</button><button id="clear-button" class="tool-button" aria-label="Clear drawing" title="Clear drawing">⌫</button></div><div id="colors" class="colors" role="group" aria-label="Brush color"></div><div class="brush-size-control"><label class="visually-hidden" for="brush-size">Brush size</label><select id="brush-size" title="Brush size"><option value="4">● Small</option><option value="10" selected>● Medium</option><option value="20">● Large</option><option value="32">● Huge</option></select></div><p id="drawing-note" class="drawing-note">Drawing tools</p></div>
           </section>
-          <aside class="chat-panel panel" aria-label="Guesses and chat"><div class="panel-heading"><h2>Chat &amp; guesses</h2><span class="chat-heading-mark" aria-hidden="true">✎</span></div><div id="chat-messages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions"></div><form id="chat-form" class="chat-form"><label for="chat-input" class="visually-hidden">Your guess or message</label><input id="chat-input" placeholder="Type your guess…" maxlength="160" autocomplete="off" spellcheck="false" /><button id="send-chat" type="submit" aria-label="Send guess or message">➜</button></form><p class="chat-hint" id="chat-hint">Enter to send</p></aside>
+          <aside class="chat-panel panel" aria-label="Correct guesses"><div class="panel-heading"><h2>Guessed it!</h2></div><div id="chat-messages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions"></div></aside>
+          <form id="chat-form" class="chat-form"><label for="chat-input" class="visually-hidden">Your guess</label><input id="chat-input" placeholder="Type your guess…" maxlength="160" autocomplete="off" spellcheck="false" /><button id="send-chat" type="submit" aria-label="Send guess">➜</button><p id="guess-feedback" class="guess-feedback" role="status" hidden></p></form>
         </div>
       </section>
     </main>
     <div id="toast" class="toast" role="status" hidden></div>
-    <dialog id="help-dialog" class="modal"><form method="dialog"><button class="modal-close" aria-label="Close instructions">×</button></form><h2>Draw &amp; guess</h2><ol class="help-steps"><li>Create a room and share its invite link.</li><li>The host sets rounds, drawing time, word choices, difficulty, and letter hints on the board.</li><li>Choose a secret word when it’s your turn. Draw it without spelling it out.</li><li>Everyone else guesses in chat. Faster correct guesses earn more points.</li></ol><p>Letter hints appear automatically during a turn. Difficulty changes the built-in vocabulary; custom-only words use your list.</p><p>Your seat, score, and completed drawing recover after a short connection loss.</p></dialog>
+    <dialog id="help-dialog" class="modal"><form method="dialog"><button class="modal-close" aria-label="Close instructions">×</button></form><h2>Draw &amp; guess</h2><ol class="help-steps"><li>Create a room and share its invite link.</li><li>The host sets rounds, drawing time, word choices, difficulty, and letter hints on the board.</li><li>Choose a secret word when it’s your turn. Draw it without spelling it out.</li><li>Type guesses below the board. Faster correct guesses earn more points.</li></ol><p>Only successful guesses appear in the shared feed. A one-letter typo gets a private “close” hint. Turn points appear between drawings.</p><p>Tap another player’s name to vote-kick. A majority of the other connected players must agree, with at least two votes. Votes expire after 60 seconds; hosts have no extra vote.</p><p>Your seat, score, and completed drawing recover after a short connection loss.</p></dialog>
+    <dialog id="player-dialog" class="modal"><form method="dialog"><button class="modal-close" aria-label="Close player actions">×</button></form><div id="vote-avatar" class="vote-avatar" aria-hidden="true"></div><h2 id="vote-player-name"></h2><p id="vote-count" role="status"></p><button id="vote-kick-button" class="secondary-button">Vote to kick</button><p class="vote-explanation">A majority of the other connected players must agree, with at least two votes. The host cannot remove a player alone.</p></dialog>
     <dialog id="invite-dialog" class="modal"><form method="dialog"><button class="modal-close" aria-label="Close invite link">×</button></form><h2>Invite your friends</h2><label class="field-label" for="invite-link">ROOM INVITE</label><input id="invite-link" readonly /><p>Copy this link into your group chat.</p></dialog>
   </body>
 </html>

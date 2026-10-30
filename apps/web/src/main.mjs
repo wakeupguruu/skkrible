@@ -14,6 +14,7 @@ try { savedProfile = JSON.parse(localStorage.getItem('skkrible:profile')); } cat
 let profile = { name: savedProfile?.name ?? '', avatar: validAvatar(savedProfile?.avatar) ? savedProfile.avatar : 0 };
 let connection = null, room = null, connected = false, overlayKey = '', chatKey = '', toastTimer, clockOffset = 0, settingsCommand = null;
 let settingsKey = '', settingsDirty = false, startAfterSettings = false, showLobbySettings = false;
+let selectedPlayer = null, feedbackTimer;
 $('player-name').value = profile.name;
 
 function toast(message) {
@@ -147,7 +148,7 @@ function frame(message) {
   } else if (message.type === 'state') {
     const previous = room?.turnId;
     room = message.room; clockOffset = room.serverNow - Date.now();
-    if (previous !== room.turnId) { board.snapshot([], room.turnId); $('chat-input').value = ''; }
+    if (previous !== room.turnId) { board.snapshot([], room.turnId); $('chat-input').value = ''; $('guess-feedback').hidden = true; }
     render();
   } else if (message.type === 'stroke') {
     board.commit(message.stroke, message.turnId);
@@ -155,6 +156,10 @@ function frame(message) {
     if (message.turnId === room?.turnId) board.snapshot(message.board, message.turnId);
   } else if (message.type === 'ink') {
     board.preview(message.stroke, message.turnId);
+  } else if (message.type === 'ack' && message.feedback) {
+    $('guess-feedback').textContent = message.feedback === 'close' ? 'You’re close! Check the spelling.' : 'Not quite. Try again.';
+    $('guess-feedback').classList.toggle('close', message.feedback === 'close'); $('guess-feedback').hidden = false;
+    clearTimeout(feedbackTimer); feedbackTimer = setTimeout(() => { $('guess-feedback').hidden = true; }, 4500);
   } else if (message.type === 'ack' && message.id === settingsCommand) {
     settingsCommand = null; settingsDirty = false;
     if (startAfterSettings) { startAfterSettings = false; connection.command('start'); }
@@ -164,6 +169,7 @@ function frame(message) {
     if (message.id === settingsCommand) { $('settings-error').textContent = message.message; settingsCommand = null; startAfterSettings = false; renderSettings(); }
     else if (!room) homeError(message.message);
     else toast(message.message);
+    renderVote();
     const pendingIds = new Set(connection.pending.filter(c => c.type === 'stroke').map(c => c.stroke.id));
     for (const id of board.pending.keys()) if (!pendingIds.has(id)) board.pending.delete(id);
     board.paintOverlay();
@@ -176,7 +182,7 @@ function render() {
   const host = room.ownerId === room.youId;
   $('copy-room-code').textContent = room.code;
   $('player-count').textContent = `${room.players.length} / ${room.settings.maxPlayers}`;
-  $('round-label').textContent = ['lobby', 'finished'].includes(room.phase) ? room.phase === 'finished' ? 'RESULTS' : 'LOBBY' : `ROUND ${Math.min(room.round, room.settings.rounds)} / ${room.settings.rounds}`;
+  $('round-label').textContent = ['lobby', 'finished'].includes(room.phase) ? room.phase === 'finished' ? 'RESULTS' : 'LOBBY' : `Round ${Math.min(room.round, room.settings.rounds)} of ${room.settings.rounds}`;
   $('turn-label').textContent = ({ lobby: 'Invite friends to play', choosing: `${drawer?.name ?? 'Friend'} is choosing`, drawing: `${drawer?.name ?? 'Friend'} is drawing`, reveal: 'Next turn soon', finished: 'Final scores', paused: 'Waiting to reconnect' })[room.phase];
   const wordLabel = $('word-label'), wordDisplay = $('word-display');
   wordDisplay.classList.toggle('long-word', (room.word || room.mask).length > 18);
@@ -188,15 +194,16 @@ function render() {
   else { wordLabel.textContent = room.phase === 'lobby' ? 'ROOM SETUP' : room.phase === 'choosing' ? 'CHOOSING A WORD' : 'GAME OVER'; wordDisplay.textContent = room.phase === 'finished' ? 'Well played!' : room.phase === 'choosing' ? 'Get ready…' : 'Waiting for friends'; }
   $('settings-button').hidden = !host || room.phase === 'lobby';
   $('settings-button').disabled = !connected || !['lobby', 'finished'].includes(room.phase);
-  const canChat = connected && !(room.phase === 'drawing' && (me?.guessed || room.drawerId === room.youId));
+  const canChat = connected && room.phase === 'drawing' && !me?.guessed && room.drawerId !== room.youId;
   $('chat-input').disabled = $('send-chat').disabled = !canChat;
-  $('chat-input').placeholder = !connected ? 'Reconnecting…' : room.phase === 'drawing' && me?.guessed ? 'You guessed it!' : room.phase === 'drawing' && room.drawerId === room.youId ? 'You’re drawing' : room.phase === 'drawing' ? 'Type your guess…' : 'Say hello…';
-  $('chat-hint').textContent = room.phase === 'drawing' && !canChat && connected ? 'Keep the word secret until the reveal' : 'Enter to send';
+  $('chat-input').placeholder = !connected ? 'Reconnecting…' : room.phase === 'drawing' && me?.guessed ? 'You guessed it!' : room.phase === 'drawing' && room.drawerId === room.youId ? 'You’re drawing' : room.phase === 'drawing' ? 'Type your guess…' : 'Wait for the next drawing…';
+  if (me?.guessed || room.phase !== 'drawing') $('guess-feedback').hidden = true;
+  document.body.classList.toggle('showing-points', room.phase === 'reveal');
   $('drawing-note').textContent = room.phase === 'drawing' && room.drawerId === room.youId ? 'Your turn. Let the doodles do the talking.  B pen · E eraser · Ctrl+Z undo' : 'The tools are yours when it’s your turn.';
   if (room.phase !== 'finished') showLobbySettings = false;
   const lobby = room.phase === 'lobby' || (room.phase === 'finished' && showLobbySettings);
   $('lobby-panel').hidden = !lobby; $('board-wrap').hidden = lobby;
-  updateTools(); renderPlayers(); renderChat(); renderSettings(); renderOverlay(host, drawer); updateClock();
+  updateTools(); renderPlayers(); renderChat(); renderSettings(); renderVote(); renderOverlay(host, drawer); updateClock();
 }
 function renderPlayers() {
   const list = $('players-list'), scrollTop = list.scrollTop, scrollLeft = list.scrollLeft;
@@ -204,38 +211,34 @@ function renderPlayers() {
   $('players-list').replaceChildren(...sorted.map(player => {
     const item = node('div', `player${player.id === room.drawerId ? ' drawing' : ''}${!player.connected ? ' away' : ''}`);
     item.classList.toggle('guessed', player.guessed);
-    const avatar = node('span', 'player-avatar'); avatar.innerHTML = avatarMarkup(player.avatar); avatar.setAttribute('aria-hidden', 'true'); item.append(avatar);
-    const details = node('div', 'player-details'); const name = node('div', 'player-name', player.name); name.title = player.name;
+    item.dataset.playerId = player.id;
+    item.append(node('span', 'player-rank', `#${sorted.findIndex(p => p.score === player.score) + 1}`));
+    const avatar = node('span', 'player-avatar'); avatar.innerHTML = avatarMarkup(player.avatar); avatar.setAttribute('aria-hidden', 'true');
+    const details = node('div', 'player-details'); const name = node(player.id === room.youId ? 'div' : 'button', 'player-name', player.name); name.title = player.name;
+    if (player.id !== room.youId) { name.type = 'button'; name.setAttribute('aria-label', `Player actions for ${player.name}`); name.addEventListener('click', () => { selectedPlayer = player.id; renderVote(); $('player-dialog').showModal(); }); }
     if (player.id === room.youId) name.append(node('span', 'you-tag', ' (you)'));
     details.append(name);
     const score = node('div', 'player-score'); score.append(node('strong', '', String(player.score)), document.createTextNode(' points'));
     details.append(score);
-    if (!player.connected || player.guessed || player.id === room.drawerId) details.append(node('div', 'player-activity', !player.connected ? 'reconnecting…' : player.guessed ? '✓ guessed it!' : '✎ artist on duty'));
-    item.append(details);
+    if (!player.connected || player.id === room.drawerId || player.guessed) details.append(node('div', 'player-activity', !player.connected ? 'Reconnecting…' : player.id === room.drawerId ? room.phase === 'choosing' ? '✎ Choosing' : room.phase === 'reveal' ? '✎ Drew this' : '✎ Drawing' : '✓ Guessed it'));
+    if (room.phase === 'reveal') details.append(node('div', 'player-turn-points', `+${player.turnPoints ?? 0} this turn`));
+    item.append(details, avatar);
     if (player.id === room.ownerId) { const crown = node('span', 'player-crown', '♛'); crown.title = 'Room host'; crown.setAttribute('aria-label', 'Room host'); item.append(crown); }
-    if (room.ownerId === room.youId && player.id !== room.youId) {
-      const kick = node('button', 'kick-button', '×'); kick.setAttribute('aria-label', `Remove ${player.name} from room`); kick.title = `Remove ${player.name}`; kick.disabled = !connected;
-      kick.addEventListener('click', () => { if (confirm(`Remove ${player.name} from the room?`)) connection.command('kick', { playerId: player.id }); }); item.append(kick);
-    }
     return item;
   }));
   list.scrollTop = scrollTop; list.scrollLeft = scrollLeft;
 }
 function renderChat() {
-  const key = room.messages.map(m => m.id).join(','); if (key === chatKey) return; chatKey = key;
+  const messages = room.messages.filter(m => m.kind === 'correct');
+  const key = messages.map(m => m.id).join(','); if (key === chatKey) return; chatKey = key;
   const list = $('chat-messages'); const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 70;
-  const nodes = room.messages.map(message => {
-    const item = node('div', `chat-message ${message.kind}`);
-    if (message.kind === 'chat') item.append(node('span', 'chat-name', message.name), node('span', 'chat-body', message.text));
-    else item.textContent = message.text;
-    return item;
-  });
+  const nodes = messages.map(message => node('div', 'chat-message correct', message.text));
   list.replaceChildren(...nodes);
   if (atBottom) list.scrollTop = list.scrollHeight;
 }
 function renderOverlay(host, drawer) {
   const overlay = $('board-overlay');
-  const key = JSON.stringify([room.phase, room.turnId, room.youId, host, connected, showLobbySettings, room.choices, room.phase === 'finished' ? room.players.map(p => [p.id, p.score]) : room.players.length]);
+  const key = JSON.stringify([room.phase, room.turnId, room.youId, host, connected, showLobbySettings, room.choices, ['finished', 'reveal'].includes(room.phase) ? room.players.map(p => [p.id, p.score, p.turnPoints]) : room.players.length]);
   if (key === overlayKey) return; overlayKey = key;
   overlay.replaceChildren(); overlay.hidden = ['drawing', 'lobby'].includes(room.phase) || showLobbySettings;
   if (overlay.hidden) return;
@@ -249,8 +252,13 @@ function renderOverlay(host, drawer) {
       room.choices.forEach((word, index) => { const button = node('button', 'word-choice', word); button.disabled = !connected; button.addEventListener('click', () => { connection.command('choose', { index, turnId: room.turnId }); for (const b of choices.children) b.disabled = true; }); choices.append(button); }); overlay.append(choices);
     }
   } else if (room.phase === 'reveal') {
-    overlay.style.background = '#fffdfbe8';
-    overlay.append(node('div', 'eyebrow', 'AND THE WORD WAS…'), node('h2', 'reveal-word', room.word || 'a mystery'), node('p', '', 'Take a breath. The next masterpiece is coming up.'));
+    overlay.style.background = '#fffffff5';
+    overlay.append(node('div', 'eyebrow', `The word was ${room.word || '—'}`), node('h2', '', 'Points this turn'));
+    const results = node('div', 'turn-results');
+    [...room.players].sort((a, b) => (b.turnPoints ?? 0) - (a.turnPoints ?? 0)).forEach(player => {
+      const row = node('div', 'turn-result'); row.append(node('span', '', player.name), node('strong', '', `+${player.turnPoints ?? 0}`)); results.append(row);
+    });
+    overlay.append(results);
   } else if (room.phase === 'paused') {
     overlay.append(node('h2', '', 'Game paused'), node('p', '', 'Your drawing and scores are saved. Play resumes when two players reconnect.'));
     addButton('Copy the invite  ↗', copyInvite);
@@ -266,13 +274,17 @@ function renderOverlay(host, drawer) {
 function updateClock() {
   if (!room) return;
   const remaining = room.deadline ? Math.max(0, Math.ceil((room.deadline - Date.now() - clockOffset) / 1000)) : null;
-  $('timer-value').textContent = remaining === null ? '—' : String(remaining);
+  const points = room.phase === 'reveal';
+  const earned = room.players.find(p => p.id === room.youId)?.turnPoints ?? 0;
+  $('timer-value').textContent = points ? `+${earned}` : remaining === null ? '—' : String(remaining);
+  $('timer').classList.toggle('is-points', points);
+  $('timer').setAttribute('role', points ? 'status' : 'timer');
   const duration = room.phase === 'drawing' ? room.settings.drawTime : room.phase === 'choosing' ? 20 : 6;
   const fraction = remaining === null ? 0 : Math.min(1, Math.max(0, (room.deadline - Date.now() - clockOffset) / (duration * 1000)));
   $('timer-ring').style.strokeDashoffset = String(169.65 * (1 - fraction));
   $('round-progress').style.width = `${fraction * 100}%`;
-  $('timer').classList.toggle('urgent', remaining !== null && remaining <= 10);
-  $('timer').setAttribute('aria-label', remaining === null ? 'No active timer' : `${remaining} seconds remaining`);
+  $('timer').classList.toggle('urgent', !points && remaining !== null && remaining <= 10);
+  $('timer').setAttribute('aria-label', points ? `${earned} points earned this turn` : remaining === null ? 'No active timer' : `${remaining} seconds remaining`);
   const hintSeconds = room.nextHintAt ? Math.max(0, Math.ceil((room.nextHintAt - Date.now() - clockOffset) / 1000)) : null;
   $('hint-status').textContent = room.phase !== 'drawing' ? '' : room.settings.hints === 0 ? 'Letter hints off' : hintSeconds !== null ? `Hint ${room.hintsRevealed}/${room.hintCount} · next in ${hintSeconds}s` : `${room.hintsRevealed}/${room.hintCount} hints revealed`;
 }
@@ -291,10 +303,8 @@ function fitKeyboard() {
 }
 $('chat-input').addEventListener('focus', () => { document.body.classList.add('typing'); fitKeyboard(); });
 $('chat-input').addEventListener('blur', () => document.body.classList.remove('typing'));
-for (const [id, className] of [['player-name', 'editing-profile'], ['custom-words', 'editing-words']]) {
-  $(id).addEventListener('focus', () => { document.body.classList.add(className); fitKeyboard(); });
-  $(id).addEventListener('blur', () => document.body.classList.remove(className));
-}
+$('player-name').addEventListener('focus', () => { document.body.classList.add('editing-profile'); fitKeyboard(); });
+$('player-name').addEventListener('blur', () => document.body.classList.remove('editing-profile'));
 window.visualViewport?.addEventListener('resize', fitKeyboard);
 window.addEventListener('resize', fitKeyboard); fitKeyboard();
 async function copyInvite() {
@@ -310,11 +320,13 @@ function leaveRoom(event) {
   if (room && connected) connection.command('leave');
   connection?.close(connected); connection = null; room = null; connected = false;
   board.snapshot([], null); board.enable(false, null, true);
-  $('game').hidden = true; $('home').hidden = false; document.body.classList.remove('in-game', 'typing', 'editing-words', 'editing-profile');
+  $('game').hidden = true; $('home').hidden = false; document.body.classList.remove('in-game', 'typing', 'editing-profile', 'showing-points');
+  $('room-menu').classList.remove('open'); $('room-menu-button').setAttribute('aria-expanded', 'false');
   history.replaceState(null, '', '/'); busy(false); $('home-error').textContent = ''; $('room-code').value = '';
 }
 $('leave-room').addEventListener('click', leaveRoom);
 document.querySelector('.brand').addEventListener('click', event => { if (room) leaveRoom(event); });
+$('room-menu-button').addEventListener('click', () => { const open = $('room-menu').classList.toggle('open'); $('room-menu-button').setAttribute('aria-expanded', String(open)); });
 $('settings-button').addEventListener('click', () => {
   if (!room) return; showLobbySettings = true; render(); $('settings-form').elements.rounds.focus();
 });
@@ -324,7 +336,6 @@ function renderSettings() {
   const key = JSON.stringify([room.code, host, room.settings]);
   if (key !== settingsKey && (!settingsDirty || !host)) {
     for (const name of ['rounds', 'drawTime', 'maxPlayers', 'hints', 'wordCount', 'difficulty']) form.elements[name].value = room.settings[name] ?? ({ wordCount: 3, difficulty: 'normal' })[name];
-    form.elements.customWords.value = room.settings.customWords.join(', '); form.elements.customOnly.checked = room.settings.customOnly;
     settingsKey = key;
   }
   for (const element of form.elements) element.disabled = !host || !connected || Boolean(settingsCommand);
@@ -333,16 +344,30 @@ function renderSettings() {
   $('start-game').disabled ||= count < 2;
   $('save-settings').hidden = $('start-game').hidden = !host;
   $('settings-status').textContent = !host ? 'Waiting for the host to start' : settingsCommand ? 'Saving…' : settingsDirty ? 'Unsaved changes' : 'Your room, your rules';
-  $('lobby-tip').textContent = count < 2 ? 'Share the invite link above. You need 2 players to start.' : host ? `${count} players ready. Start when everyone’s here.` : 'You can chat while the host sets up the game.';
+  $('lobby-tip').textContent = count < 2 ? 'Share the invite link above. You need 2 players to start.' : host ? `${count} players ready. Start when everyone’s here.` : 'Waiting for the host to start.';
 }
 $('settings-form').addEventListener('input', () => { settingsDirty = true; $('settings-error').textContent = ''; $('settings-status').textContent = 'Unsaved changes'; });
 $('settings-form').addEventListener('submit', event => {
   event.preventDefault(); if (!connected) return;
   const form = new FormData(event.target);
   startAfterSettings = event.submitter?.id === 'start-game';
-  settingsCommand = connection.command('settings', { settings: { rounds: Number(form.get('rounds')), drawTime: Number(form.get('drawTime')), maxPlayers: Number(form.get('maxPlayers')), hints: Number(form.get('hints')), wordCount: Number(form.get('wordCount')), difficulty: form.get('difficulty'), customWords: form.get('customWords'), customOnly: form.has('customOnly') } });
+  settingsCommand = connection.command('settings', { settings: { rounds: Number(form.get('rounds')), drawTime: Number(form.get('drawTime')), maxPlayers: Number(form.get('maxPlayers')), hints: Number(form.get('hints')), wordCount: Number(form.get('wordCount')), difficulty: form.get('difficulty') } });
   renderSettings();
 });
+function renderVote() {
+  if (!room || !selectedPlayer) return;
+  const player = room.players.find(p => p.id === selectedPlayer);
+  if (!player) { $('player-dialog').close(); selectedPlayer = null; return; }
+  $('vote-player-name').textContent = player.name; $('vote-avatar').innerHTML = avatarMarkup(player.avatar);
+  const vote = room.voteKicks?.find(v => v.targetId === player.id);
+  const eligible = room.players.filter(p => p.connected && p.id !== player.id).length;
+  const required = vote?.required ?? Math.max(2, Math.floor(eligible / 2) + 1);
+  $('vote-count').textContent = `${vote?.votes ?? 0} / ${required} votes${vote ? ' · 60-second vote' : ''}`;
+  $('vote-kick-button').textContent = vote?.voted ? 'You voted to kick' : 'Vote to kick';
+  $('vote-kick-button').disabled = !connected || Boolean(vote?.voted) || (vote ? !vote.eligible : eligible < 2);
+  if (!vote && eligible < 2) $('vote-count').textContent = 'At least 3 connected players are needed to vote-kick.';
+}
+$('vote-kick-button').addEventListener('click', () => { if (selectedPlayer && connected) { connection.command('voteKick', { playerId: selectedPlayer }); $('vote-kick-button').disabled = true; } });
 for (const dialog of document.querySelectorAll('dialog')) dialog.addEventListener('click', event => { if (event.target === dialog) { const rect = dialog.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close(); } });
 
 const invite = new URLSearchParams(location.search).get('room')?.toUpperCase();
