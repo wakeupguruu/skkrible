@@ -1,5 +1,16 @@
 import { test, expect } from '@playwright/test';
 
+async function fitsScreen(page) {
+  expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight + 1 && document.documentElement.scrollWidth <= innerWidth + 1)).toBeTruthy();
+  for (const selector of ['#lobby-panel:not([hidden])', '#chat-form', '#board-wrap:not([hidden])']) {
+    const element = page.locator(selector);
+    if (!await element.count() || !await element.isVisible()) continue;
+    const rect = await element.boundingBox();
+    const size = page.viewportSize();
+    expect(rect.y).toBeGreaterThanOrEqual(0); expect(rect.y + rect.height).toBeLessThanOrEqual(size.height + 1);
+  }
+}
+
 async function create(page, name) {
   await page.goto('/');
   await page.getByLabel('YOUR NAME', { exact: true }).fill(name);
@@ -26,10 +37,14 @@ test('a private match restores a dropped seat, keeps draft text, and completes w
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   const code = await create(page, 'Alice');
-  await page.getByRole('button', { name: 'Room settings', exact: true }).click();
+  await expect(page.locator('#lobby-panel')).toBeVisible();
   await page.locator('[name="rounds"]').selectOption('1');
+  await page.locator('[name="wordCount"]').selectOption('5');
+  await page.locator('[name="difficulty"]').selectOption('hard');
+  await page.locator('[name="hints"]').selectOption('3');
+  await page.locator('[name="drawTime"]').selectOption('30');
   await page.getByRole('button', { name: 'Save room settings' }).click();
-  await expect(page.locator('#settings-dialog')).toBeHidden();
+  await expect(page.locator('#toast')).toHaveText('Room settings saved.');
   const otherContext = await browser.newContext();
   await otherContext.addInitScript(() => {
     const NativeSocket = window.WebSocket;
@@ -42,8 +57,21 @@ test('a private match restores a dropped seat, keeps draft text, and completes w
   friend.on('pageerror', error => errors.push(error.message));
   try {
     await join(friend, 'Bob', code);
-    await page.getByRole('button', { name: 'Let’s get drawing!' }).click();
+    await expect(friend.locator('[name="difficulty"]')).toHaveValue('hard');
+    await expect(friend.locator('[name="difficulty"]')).toBeDisabled();
+    await page.screenshot({ path: '.tools/ui-lobby-desktop.png' });
+    await fitsScreen(page);
+    await page.getByRole('button', { name: 'Start game' }).click();
+    await expect(page.locator('.word-choice')).toHaveCount(5);
     const word = await choose(page);
+    await expect(page.locator('#timer-value')).toHaveText(/\d+/);
+    await expect(friend.locator('#hint-status')).toContainText('next in');
+    await fitsScreen(page);
+    await page.setViewportSize({ width: 1366, height: 768 });
+    await fitsScreen(page); await page.screenshot({ path: '.tools/ui-game-desktop.png' });
+    await page.setViewportSize({ width: 320, height: 568 }); await fitsScreen(page);
+    await page.setViewportSize({ width: 844, height: 390 }); await fitsScreen(page);
+    await page.setViewportSize({ width: 1440, height: 1000 });
     await expect(friend.locator('.word-choice')).toHaveCount(0);
     await expect(friend.locator('#word-display')).not.toHaveText(word);
     const rect = await page.locator('#preview-canvas').boundingBox();
@@ -82,6 +110,7 @@ test('a private match restores a dropped seat, keeps draft text, and completes w
     await expect(page.locator('.chat-body').last()).toHaveText('<img src=x onerror=alert(1)>');
     await expect(page.locator('.chat-body img')).toHaveCount(0);
     await expect(page.locator('.chat-body').last()).toHaveCSS('font-size', '18px');
+    await expect(friend.locator('#hint-status')).toContainText('Hint 1/', { timeout: 12_000 });
     await friend.locator('#chat-input').fill(word);
     await friend.locator('#chat-input').press('Enter');
     await expect(friend.locator('.chat-message.correct')).toContainText('Bob guessed it!');
@@ -114,7 +143,9 @@ test('mobile lobby and touch drawing fit the viewport and keep chat readable', a
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
     const code = await create(page, 'Mobile artist');
     await join(friend, 'Desktop friend', code);
-    await page.getByRole('button', { name: 'Let’s get drawing!' }).click();
+    await fitsScreen(page);
+    await page.screenshot({ path: '.tools/ui-lobby-mobile.png' });
+    await page.getByRole('button', { name: 'Start game' }).click();
     const word = await choose(page);
     await page.locator('#preview-canvas').scrollIntoViewIfNeeded();
     const rect = await page.locator('#preview-canvas').boundingBox();
@@ -124,6 +155,7 @@ test('mobile lobby and touch drawing fit the viewport and keep chat readable', a
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     await expect.poll(() => friend.locator('#drawing-canvas').evaluate(canvas => canvas.getContext('2d').getImageData(0, 0, 1000, 750).data.some((n, i) => i % 4 !== 3 && n < 200))).toBeTruthy();
     await expect(page.locator('#chat-input')).toHaveCSS('font-size', '18px');
+    await fitsScreen(page);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
     await page.screenshot({ path: '.tools/ui-room-mobile.png', fullPage: true });
     await friend.locator('#chat-input').fill(word);
@@ -144,7 +176,12 @@ test('mobile lobby and touch drawing fit the viewport and keep chat readable', a
 
 test('desktop welcome is responsive and an unknown invite gives a useful error', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Bad drawings. Great company.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Draw. Guess. Repeat.' })).toBeVisible();
+  const before = await page.locator('#avatar-preview').innerHTML();
+  await page.getByRole('button', { name: 'Next eyes' }).click();
+  expect(await page.locator('#avatar-preview').innerHTML()).not.toEqual(before);
+  await page.getByRole('button', { name: 'Avatar color 5', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Avatar color 5', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await page.screenshot({ path: '.tools/ui-home-desktop.png', fullPage: true });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
   await page.getByLabel('YOUR NAME', { exact: true }).fill('Lost friend');
@@ -152,4 +189,33 @@ test('desktop welcome is responsive and an unknown invite gives a useful error',
   await page.getByRole('button', { name: 'Join room' }).click();
   await expect(page.locator('#home-error')).toContainText('missing or expired');
   await expect(page.locator('#home')).toBeVisible();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('skkrible:profile')).avatar)).toBe(12);
+  const customFace = await page.locator('#avatar-preview').innerHTML();
+  await page.reload();
+  expect(await page.locator('#avatar-preview').innerHTML()).toEqual(customFace);
+});
+
+test('home and lobby controls fit small phones, laptop, desktop, and landscape without page scrolling', async ({ page }) => {
+  for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 1366, height: 768 }, { width: 1920, height: 1080 }, { width: 844, height: 390 }]) {
+    await page.setViewportSize(viewport); await page.goto('/');
+    await fitsScreen(page);
+    const homeCard = await page.locator('.join-card').boundingBox();
+    expect(homeCard.x).toBeGreaterThanOrEqual(0); expect(homeCard.x + homeCard.width).toBeLessThanOrEqual(viewport.width);
+    expect(homeCard.y).toBeGreaterThanOrEqual(0);
+    expect(homeCard.y + homeCard.height).toBeLessThanOrEqual(viewport.height + 1);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await create(page, 'Layout check');
+  for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 1366, height: 768 }, { width: 844, height: 390 }]) {
+    await page.setViewportSize(viewport); await fitsScreen(page);
+    for (const selector of ['#settings-form select', '#custom-words', '#start-game']) {
+      for (const control of await page.locator(selector).all()) {
+        const rect = await control.boundingBox();
+        const panel = await page.locator('#lobby-panel').boundingBox();
+        expect(rect.y).toBeGreaterThanOrEqual(0); expect(rect.y + rect.height).toBeLessThan(viewport.height);
+        expect(rect.y).toBeGreaterThanOrEqual(panel.y); expect(rect.y + rect.height).toBeLessThanOrEqual(panel.y + panel.height);
+        expect(rect.x).toBeGreaterThanOrEqual(panel.x); expect(rect.x + rect.width).toBeLessThanOrEqual(panel.x + panel.width);
+      }
+    }
+  }
 });

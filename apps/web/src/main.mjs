@@ -1,18 +1,19 @@
 import './style.css';
 import { BACKEND, RoomConnection, readStorage } from './connection.mjs';
 import { DrawingBoard, COLORS, COLOR_NAMES } from './board.mjs';
+import { FACE_COLORS, FACE_PARTS, decodeAvatar, encodeAvatar, validAvatar } from '../../shared/avatar.mjs';
+import { avatarMarkup } from './avatar.mjs';
 
 const $ = id => document.getElementById(id);
-const AVATARS = ['🐸', '🦊', '🐱', '🐨', '🐼', '🐻', '🐰', '🐙'];
-const AVATAR_NAMES = ['Frog', 'Fox', 'Cat', 'Koala', 'Panda', 'Bear', 'Rabbit', 'Octopus'];
 const codePattern = /^[A-HJ-NP-Z2-9]{8}$/;
 const node = (tag, className = '', content = '') => {
   const element = document.createElement(tag); element.className = className; element.textContent = content; return element;
 };
 let savedProfile;
 try { savedProfile = JSON.parse(localStorage.getItem('skkrible:profile')); } catch { /* A new profile works without storage. */ }
-let profile = { name: savedProfile?.name ?? '', avatar: Number.isInteger(savedProfile?.avatar) ? savedProfile.avatar : 0 };
+let profile = { name: savedProfile?.name ?? '', avatar: validAvatar(savedProfile?.avatar) ? savedProfile.avatar : 0 };
 let connection = null, room = null, connected = false, overlayKey = '', chatKey = '', toastTimer, clockOffset = 0, settingsCommand = null;
+let settingsKey = '', settingsDirty = false, startAfterSettings = false, showLobbySettings = false;
 $('player-name').value = profile.name;
 
 function toast(message) {
@@ -20,12 +21,33 @@ function toast(message) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('toast').hidden = true; }, 4500);
 }
 function avatars() {
-  $('avatar-picker').replaceChildren(...AVATARS.map((avatar, i) => {
-    const button = node('button', `avatar-choice${profile.avatar === i ? ' selected' : ''}`, avatar);
-    button.type = 'button'; button.setAttribute('aria-label', `${AVATAR_NAMES[i]} avatar`); button.setAttribute('aria-pressed', String(profile.avatar === i));
-    button.addEventListener('click', () => { profile.avatar = i; avatars(); }); return button;
-  }));
+  $('avatar-preview').innerHTML = avatarMarkup(profile.avatar);
+  const parts = decodeAvatar(profile.avatar);
+  for (const [index, button] of [...$('avatar-picker').children].entries()) {
+    button.classList.toggle('selected', index === parts.color); button.setAttribute('aria-pressed', String(index === parts.color));
+  }
+  for (const [key, count] of Object.entries(FACE_PARTS)) {
+    const label = document.querySelector(`[data-part-label="${key}"]`);
+    if (label) label.textContent = `${key === 'accessory' ? 'Hat' : key[0].toUpperCase() + key.slice(1)} ${parts[key] + 1}/${count}`;
+  }
 }
+for (const key of ['eyes', 'mouth', 'accessory']) {
+  const row = node('div', 'avatar-control'), label = node('span'); label.dataset.partLabel = key;
+  for (const direction of [-1, 1]) {
+    const button = node('button', '', direction === -1 ? '‹' : '›'); button.type = 'button';
+    button.setAttribute('aria-label', `${direction === -1 ? 'Previous' : 'Next'} ${key}`);
+    button.addEventListener('click', () => { const parts = decodeAvatar(profile.avatar); parts[key] = (parts[key] + direction + FACE_PARTS[key]) % FACE_PARTS[key]; profile.avatar = encodeAvatar(parts); avatars(); });
+    row.append(button); if (direction === -1) row.append(label);
+  }
+  $('avatar-controls').append(row);
+}
+FACE_COLORS.forEach((color, index) => {
+  const button = node('button', 'avatar-choice'); button.type = 'button'; button.style.background = color;
+  button.setAttribute('aria-label', `Avatar color ${index + 1}`);
+  button.addEventListener('click', () => { profile.avatar = encodeAvatar({ ...decodeAvatar(profile.avatar), color: index }); avatars(); });
+  $('avatar-picker').append(button);
+});
+$('random-avatar').addEventListener('click', () => { profile.avatar = (profile.avatar + 1 + crypto.getRandomValues(new Uint32Array(1))[0] % 799) % 800; avatars(); });
 avatars();
 function saveProfile() {
   if (!$('play-form').reportValidity()) return false;
@@ -53,7 +75,7 @@ async function request(path, options = {}) {
 }
 async function enterRoom(code) {
   await request(`/api/rooms/${code}`);
-  connection?.close(); room = null; overlayKey = ''; chatKey = '';
+  connection?.close(); room = null; overlayKey = ''; chatKey = ''; settingsKey = ''; settingsDirty = false; showLobbySettings = false; settingsCommand = null; startAfterSettings = false;
   connection = new RoomConnection(code, profile, frame, status);
 }
 $('play-form').addEventListener('submit', async event => {
@@ -134,9 +156,12 @@ function frame(message) {
   } else if (message.type === 'ink') {
     board.preview(message.stroke, message.turnId);
   } else if (message.type === 'ack' && message.id === settingsCommand) {
-    $('settings-dialog').close(); settingsCommand = null; toast('Room settings saved.');
+    settingsCommand = null; settingsDirty = false;
+    if (startAfterSettings) { startAfterSettings = false; connection.command('start'); }
+    else toast('Room settings saved.');
+    renderSettings();
   } else if (message.type === 'error') {
-    if (message.id === settingsCommand) { $('settings-error').textContent = message.message; settingsCommand = null; }
+    if (message.id === settingsCommand) { $('settings-error').textContent = message.message; settingsCommand = null; startAfterSettings = false; renderSettings(); }
     else if (!room) homeError(message.message);
     else toast(message.message);
     const pendingIds = new Set(connection.pending.filter(c => c.type === 'stroke').map(c => c.stroke.id));
@@ -151,29 +176,35 @@ function render() {
   const host = room.ownerId === room.youId;
   $('copy-room-code').textContent = room.code;
   $('player-count').textContent = `${room.players.length} / ${room.settings.maxPlayers}`;
-  $('round-label').textContent = ['lobby', 'finished'].includes(room.phase) ? room.phase === 'finished' ? 'THE FINAL MASTERPIECES' : 'WAITING FOR FRIENDS' : `ROUND ${Math.min(room.round, room.settings.rounds)} OF ${room.settings.rounds}`;
-  $('turn-label').textContent = ({ lobby: 'Your next masterpiece awaits.', choosing: `${drawer?.name ?? 'A friend'} is choosing a word.`, drawing: `${drawer?.name ?? 'A friend'} is drawing${room.drawerId === room.youId ? ' (that’s you!)' : ''}.`, reveal: 'Some truly inspired guesses.', finished: 'That was beautifully chaotic.', paused: 'Your room is saved. We’ll wait.' })[room.phase];
+  $('round-label').textContent = ['lobby', 'finished'].includes(room.phase) ? room.phase === 'finished' ? 'RESULTS' : 'LOBBY' : `ROUND ${Math.min(room.round, room.settings.rounds)} / ${room.settings.rounds}`;
+  $('turn-label').textContent = ({ lobby: 'Invite friends to play', choosing: `${drawer?.name ?? 'Friend'} is choosing`, drawing: `${drawer?.name ?? 'Friend'} is drawing`, reveal: 'Next turn soon', finished: 'Final scores', paused: 'Waiting to reconnect' })[room.phase];
   const wordLabel = $('word-label'), wordDisplay = $('word-display');
+  wordDisplay.classList.toggle('long-word', (room.word || room.mask).length > 18);
   wordDisplay.classList.toggle('mask', room.phase === 'drawing' && !room.word);
   if (room.phase === 'drawing') {
-    wordLabel.textContent = room.drawerId === room.youId ? 'DRAW THIS · NO SPELLING IT OUT' : me?.guessed ? 'YOU GOT IT! ENJOY THE MASTERPIECE' : 'WHAT COULD IT POSSIBLY BE?';
+    wordLabel.textContent = room.drawerId === room.youId ? 'DRAW THIS' : me?.guessed ? 'YOU GUESSED IT!' : `GUESS THE WORD · ${Array.from(room.mask).filter(c => c !== ' ').length} LETTERS`;
     wordDisplay.textContent = room.word || room.mask;
   } else if (room.phase === 'reveal') { wordLabel.textContent = 'THE WORD WAS'; wordDisplay.textContent = room.word || '—'; }
-  else { wordLabel.textContent = 'GRAB A FRIEND AND A LITTLE IMAGINATION'; wordDisplay.textContent = room.phase === 'finished' ? 'beautifully done, everyone.' : 'let’s draw something.'; }
-  $('settings-button').hidden = !host;
+  else { wordLabel.textContent = room.phase === 'lobby' ? 'ROOM SETUP' : room.phase === 'choosing' ? 'CHOOSING A WORD' : 'GAME OVER'; wordDisplay.textContent = room.phase === 'finished' ? 'Well played!' : room.phase === 'choosing' ? 'Get ready…' : 'Waiting for friends'; }
+  $('settings-button').hidden = !host || room.phase === 'lobby';
   $('settings-button').disabled = !connected || !['lobby', 'finished'].includes(room.phase);
   const canChat = connected && !(room.phase === 'drawing' && (me?.guessed || room.drawerId === room.youId));
   $('chat-input').disabled = $('send-chat').disabled = !canChat;
-  $('chat-input').placeholder = !connected ? 'Reconnecting… keep your guess.' : room.phase === 'drawing' && me?.guessed ? 'You got it! ✨' : room.phase === 'drawing' && room.drawerId === room.youId ? 'Let your drawing do the talking.' : room.phase === 'drawing' ? 'Type your guess…' : 'Say hi to the gang…';
-  $('chat-hint').textContent = room.phase === 'drawing' && !canChat && connected ? 'Keep the word a secret until the reveal.' : 'Press enter to send. Wild guesses welcome.';
+  $('chat-input').placeholder = !connected ? 'Reconnecting…' : room.phase === 'drawing' && me?.guessed ? 'You guessed it!' : room.phase === 'drawing' && room.drawerId === room.youId ? 'You’re drawing' : room.phase === 'drawing' ? 'Type your guess…' : 'Say hello…';
+  $('chat-hint').textContent = room.phase === 'drawing' && !canChat && connected ? 'Keep the word secret until the reveal' : 'Enter to send';
   $('drawing-note').textContent = room.phase === 'drawing' && room.drawerId === room.youId ? 'Your turn. Let the doodles do the talking.  B pen · E eraser · Ctrl+Z undo' : 'The tools are yours when it’s your turn.';
-  updateTools(); renderPlayers(); renderChat(); renderOverlay(host, drawer); updateClock();
+  if (room.phase !== 'finished') showLobbySettings = false;
+  const lobby = room.phase === 'lobby' || (room.phase === 'finished' && showLobbySettings);
+  $('lobby-panel').hidden = !lobby; $('board-wrap').hidden = lobby;
+  updateTools(); renderPlayers(); renderChat(); renderSettings(); renderOverlay(host, drawer); updateClock();
 }
 function renderPlayers() {
+  const list = $('players-list'), scrollTop = list.scrollTop, scrollLeft = list.scrollLeft;
   const sorted = [...room.players].sort((a, b) => b.score - a.score);
   $('players-list').replaceChildren(...sorted.map(player => {
     const item = node('div', `player${player.id === room.drawerId ? ' drawing' : ''}${!player.connected ? ' away' : ''}`);
-    const avatar = node('span', 'player-avatar', AVATARS[player.avatar] ?? AVATARS[0]); avatar.setAttribute('aria-hidden', 'true'); item.append(avatar);
+    item.classList.toggle('guessed', player.guessed);
+    const avatar = node('span', 'player-avatar'); avatar.innerHTML = avatarMarkup(player.avatar); avatar.setAttribute('aria-hidden', 'true'); item.append(avatar);
     const details = node('div', 'player-details'); const name = node('div', 'player-name', player.name); name.title = player.name;
     if (player.id === room.youId) name.append(node('span', 'you-tag', ' (you)'));
     details.append(name);
@@ -188,6 +219,7 @@ function renderPlayers() {
     }
     return item;
   }));
+  list.scrollTop = scrollTop; list.scrollLeft = scrollLeft;
 }
 function renderChat() {
   const key = room.messages.map(m => m.id).join(','); if (key === chatKey) return; chatKey = key;
@@ -203,19 +235,15 @@ function renderChat() {
 }
 function renderOverlay(host, drawer) {
   const overlay = $('board-overlay');
-  const key = JSON.stringify([room.phase, room.turnId, room.youId, host, connected, room.choices, room.phase === 'finished' ? room.players.map(p => [p.id, p.score]) : room.players.length]);
+  const key = JSON.stringify([room.phase, room.turnId, room.youId, host, connected, showLobbySettings, room.choices, room.phase === 'finished' ? room.players.map(p => [p.id, p.score]) : room.players.length]);
   if (key === overlayKey) return; overlayKey = key;
-  overlay.replaceChildren(); overlay.hidden = room.phase === 'drawing';
-  if (room.phase === 'drawing') return;
+  overlay.replaceChildren(); overlay.hidden = ['drawing', 'lobby'].includes(room.phase) || showLobbySettings;
+  if (overlay.hidden) return;
   const addButton = (label, fn, primary = true) => {
     const button = node('button', primary ? 'primary-button' : 'secondary-button', label); button.disabled = !connected; button.addEventListener('click', fn); overlay.append(button);
   };
-  if (room.phase === 'lobby') {
-    overlay.append(node('div', 'overlay-art', '🐸 ✎ 🦊'), node('div', 'eyebrow', 'GOOD COMPANY, QUESTIONABLE ART'), node('h2', '', 'Everybody in?'), node('p', '', 'Send the invite to your group chat. The best drawings are the ones nobody understands.'));
-    addButton(host ? room.players.filter(p => p.connected).length >= 2 ? 'Let’s get drawing!  ↗' : 'Waiting for a friend…' : 'Invite another friend  ↗', () => host ? connection.command('start') : copyInvite());
-    if (host && room.players.filter(p => p.connected).length < 2) overlay.querySelector('button').disabled = true;
-  } else if (room.phase === 'choosing') {
-    overlay.append(node('div', 'overlay-art', '✎'), node('div', 'eyebrow', room.drawerId === room.youId ? 'YOUR MOMENT OF GLORY' : 'THE SUSPENSE IS REAL'), node('h2', '', room.drawerId === room.youId ? 'What are we drawing?' : `${drawer?.name ?? 'Your friend'} is picking a word…`), node('p', '', room.drawerId === room.youId ? 'Pick one. Keep it a secret. Make it a masterpiece.' : 'Get your wild guesses ready.'));
+  if (room.phase === 'choosing') {
+    overlay.append(node('div', 'overlay-art', '✎'), node('h2', '', room.drawerId === room.youId ? 'Choose a word' : `${drawer?.name ?? 'Your friend'} is choosing…`), node('p', '', room.drawerId === room.youId ? 'Pick a word to draw. Keep it secret!' : 'Get ready to guess.'));
     if (room.drawerId === room.youId) {
       const choices = node('div', 'word-choices');
       room.choices.forEach((word, index) => { const button = node('button', 'word-choice', word); button.disabled = !connected; button.addEventListener('click', () => { connection.command('choose', { index, turnId: room.turnId }); for (const b of choices.children) b.disabled = true; }); choices.append(button); }); overlay.append(choices);
@@ -224,12 +252,12 @@ function renderOverlay(host, drawer) {
     overlay.style.background = '#fffdfbe8';
     overlay.append(node('div', 'eyebrow', 'AND THE WORD WAS…'), node('h2', 'reveal-word', room.word || 'a mystery'), node('p', '', 'Take a breath. The next masterpiece is coming up.'));
   } else if (room.phase === 'paused') {
-    overlay.append(node('div', 'overlay-art', '☁'), node('h2', '', 'Taking a tiny breather.'), node('p', '', 'Your drawing and scores are saved. We’ll carry on when two friends are back.'));
+    overlay.append(node('h2', '', 'Game paused'), node('p', '', 'Your drawing and scores are saved. Play resumes when two players reconnect.'));
     addButton('Copy the invite  ↗', copyInvite);
   } else if (room.phase === 'finished') {
     overlay.append(node('div', 'eyebrow', 'THAT’S A WRAP'), node('h2', '', 'Nicely drawn, everyone.'));
     const podium = node('div', 'podium');
-    [...room.players].sort((a, b) => b.score - a.score).slice(0, 3).forEach((p, i) => { const person = node('div', 'podium-person', p.name); person.prepend(node('span', 'podium-avatar', `${['🥇', '🥈', '🥉'][i]}${AVATARS[p.avatar]}`)); person.append(node('strong', '', `${p.score} points`)); podium.append(person); }); overlay.append(podium);
+    [...room.players].sort((a, b) => b.score - a.score).slice(0, 3).forEach((p, i) => { const person = node('div', 'podium-person', `${i + 1}. ${p.name}`); const face = node('span', 'podium-avatar'); face.innerHTML = avatarMarkup(p.avatar); person.prepend(face); person.append(node('strong', '', `${p.score} points`)); podium.append(person); }); overlay.append(podium);
     if (host) addButton('One more round?  ↗', () => connection.command('start'));
     else overlay.append(node('p', '', 'Waiting for the host to start another game.'));
   }
@@ -238,9 +266,15 @@ function renderOverlay(host, drawer) {
 function updateClock() {
   if (!room) return;
   const remaining = room.deadline ? Math.max(0, Math.ceil((room.deadline - Date.now() - clockOffset) / 1000)) : null;
-  $('timer').textContent = remaining === null ? '—' : String(remaining);
+  $('timer-value').textContent = remaining === null ? '—' : String(remaining);
+  const duration = room.phase === 'drawing' ? room.settings.drawTime : room.phase === 'choosing' ? 20 : 6;
+  const fraction = remaining === null ? 0 : Math.min(1, Math.max(0, (room.deadline - Date.now() - clockOffset) / (duration * 1000)));
+  $('timer-ring').style.strokeDashoffset = String(169.65 * (1 - fraction));
+  $('round-progress').style.width = `${fraction * 100}%`;
   $('timer').classList.toggle('urgent', remaining !== null && remaining <= 10);
   $('timer').setAttribute('aria-label', remaining === null ? 'No active timer' : `${remaining} seconds remaining`);
+  const hintSeconds = room.nextHintAt ? Math.max(0, Math.ceil((room.nextHintAt - Date.now() - clockOffset) / 1000)) : null;
+  $('hint-status').textContent = room.phase !== 'drawing' ? '' : room.settings.hints === 0 ? 'Letter hints off' : hintSeconds !== null ? `Hint ${room.hintsRevealed}/${room.hintCount} · next in ${hintSeconds}s` : `${room.hintsRevealed}/${room.hintCount} hints revealed`;
 }
 setInterval(updateClock, 250);
 
@@ -250,12 +284,19 @@ $('chat-form').addEventListener('submit', event => {
   if (connection.command('chat', { text: value, turnId: room.turnId })) $('chat-input').value = '';
 });
 function fitKeyboard() {
-  document.documentElement.style.setProperty('--app-height', `${window.visualViewport?.height ?? innerHeight}px`);
+  const height = window.visualViewport?.height ?? innerHeight;
+  document.documentElement.style.setProperty('--app-height', `${height}px`);
+  document.body.classList.toggle('keyboard-small', height < 500);
   if (document.body.classList.contains('typing') && innerWidth <= 680) requestAnimationFrame(() => scrollTo(0, 0));
 }
 $('chat-input').addEventListener('focus', () => { document.body.classList.add('typing'); fitKeyboard(); });
 $('chat-input').addEventListener('blur', () => document.body.classList.remove('typing'));
+for (const [id, className] of [['player-name', 'editing-profile'], ['custom-words', 'editing-words']]) {
+  $(id).addEventListener('focus', () => { document.body.classList.add(className); fitKeyboard(); });
+  $(id).addEventListener('blur', () => document.body.classList.remove(className));
+}
 window.visualViewport?.addEventListener('resize', fitKeyboard);
+window.addEventListener('resize', fitKeyboard); fitKeyboard();
 async function copyInvite() {
   if (!room) return;
   const url = new URL('/', location.origin); url.searchParams.set('room', room.code);
@@ -269,22 +310,38 @@ function leaveRoom(event) {
   if (room && connected) connection.command('leave');
   connection?.close(connected); connection = null; room = null; connected = false;
   board.snapshot([], null); board.enable(false, null, true);
-  $('game').hidden = true; $('home').hidden = false; document.body.classList.remove('in-game');
+  $('game').hidden = true; $('home').hidden = false; document.body.classList.remove('in-game', 'typing', 'editing-words', 'editing-profile');
   history.replaceState(null, '', '/'); busy(false); $('home-error').textContent = ''; $('room-code').value = '';
 }
 $('leave-room').addEventListener('click', leaveRoom);
 document.querySelector('.brand').addEventListener('click', event => { if (room) leaveRoom(event); });
 $('settings-button').addEventListener('click', () => {
-  if (!room) return;
-  const form = $('settings-form');
-  for (const key of ['rounds', 'drawTime', 'maxPlayers', 'hints']) form.elements[key].value = room.settings[key];
-  form.elements.customWords.value = room.settings.customWords.join(', '); form.elements.customOnly.checked = room.settings.customOnly;
-  $('settings-error').textContent = ''; $('settings-dialog').showModal();
+  if (!room) return; showLobbySettings = true; render(); $('settings-form').elements.rounds.focus();
 });
+function renderSettings() {
+  if (!room) return;
+  const form = $('settings-form'), host = room.ownerId === room.youId;
+  const key = JSON.stringify([room.code, host, room.settings]);
+  if (key !== settingsKey && (!settingsDirty || !host)) {
+    for (const name of ['rounds', 'drawTime', 'maxPlayers', 'hints', 'wordCount', 'difficulty']) form.elements[name].value = room.settings[name] ?? ({ wordCount: 3, difficulty: 'normal' })[name];
+    form.elements.customWords.value = room.settings.customWords.join(', '); form.elements.customOnly.checked = room.settings.customOnly;
+    settingsKey = key;
+  }
+  for (const element of form.elements) element.disabled = !host || !connected || Boolean(settingsCommand);
+  for (const option of form.elements.maxPlayers.options) option.disabled = Number(option.value) < room.players.length;
+  const count = room.players.filter(p => p.connected).length;
+  $('start-game').disabled ||= count < 2;
+  $('save-settings').hidden = $('start-game').hidden = !host;
+  $('settings-status').textContent = !host ? 'Waiting for the host to start' : settingsCommand ? 'Saving…' : settingsDirty ? 'Unsaved changes' : 'Your room, your rules';
+  $('lobby-tip').textContent = count < 2 ? 'Share the invite link above. You need 2 players to start.' : host ? `${count} players ready. Start when everyone’s here.` : 'You can chat while the host sets up the game.';
+}
+$('settings-form').addEventListener('input', () => { settingsDirty = true; $('settings-error').textContent = ''; $('settings-status').textContent = 'Unsaved changes'; });
 $('settings-form').addEventListener('submit', event => {
   event.preventDefault(); if (!connected) return;
   const form = new FormData(event.target);
-  settingsCommand = connection.command('settings', { settings: { rounds: Number(form.get('rounds')), drawTime: Number(form.get('drawTime')), maxPlayers: Number(form.get('maxPlayers')), hints: Number(form.get('hints')), customWords: form.get('customWords'), customOnly: form.has('customOnly') } });
+  startAfterSettings = event.submitter?.id === 'start-game';
+  settingsCommand = connection.command('settings', { settings: { rounds: Number(form.get('rounds')), drawTime: Number(form.get('drawTime')), maxPlayers: Number(form.get('maxPlayers')), hints: Number(form.get('hints')), wordCount: Number(form.get('wordCount')), difficulty: form.get('difficulty'), customWords: form.get('customWords'), customOnly: form.has('customOnly') } });
+  renderSettings();
 });
 for (const dialog of document.querySelectorAll('dialog')) dialog.addEventListener('click', event => { if (event.target === dialog) { const rect = dialog.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close(); } });
 
