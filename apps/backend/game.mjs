@@ -5,6 +5,15 @@ export const ROOM_TTL = 24 * 60 * 60 * 1000;
 export const PALETTE = ['#252a34', '#ffffff', '#868e96', '#f03e3e', '#f76707', '#fcc419', '#40c057', '#12b886', '#15aabf', '#228be6', '#7950f2', '#be4bdb', '#f06595', '#a66b46'];
 const ACTIVE = ['choosing', 'drawing', 'reveal'];
 const normalize = text => text.normalize('NFKC').toLocaleLowerCase('en').replace(/[\s\p{P}]+/gu, '');
+function closeGuess(guess, answer) {
+  const a = Array.from(normalize(guess)), b = Array.from(normalize(answer));
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0;
+  while (i < Math.min(a.length, b.length) && a[i] === b[i]) i++;
+  const tail = (letters, start) => letters.slice(start).join('');
+  if (a.length !== b.length) return a.length > b.length ? tail(a, i + 1) === tail(b, i) : tail(a, i) === tail(b, i + 1);
+  return tail(a, i + 1) === tail(b, i + 1) || (a[i] === b[i + 1] && a[i + 1] === b[i] && tail(a, i + 2) === tail(b, i + 2));
+}
 const fail = message => { throw new Error(message); };
 export function text(value, min, max, label) {
   if (typeof value !== 'string') fail(`${label} must be text.`);
@@ -21,8 +30,8 @@ export function createRoom(code, now = Date.now()) {
   return { code, createdAt: now, updatedAt: now, expiresAt: now + ROOM_TTL, players: [], ownerId: null,
     phase: 'lobby', round: 0, turnIndex: -1, order: [], drawerId: null, turnId: null, word: '', choices: [],
     deadline: null, drawingStartedAt: null, disconnectDeadline: null, pausedPhase: null, remaining: 0,
-    hintsRevealed: 0, hintOrder: [], board: [], messages: [], usedWords: [],
-    settings: { rounds: 3, drawTime: 80, maxPlayers: 12, hints: 2, wordCount: 3, difficulty: 'normal', customOnly: false, customWords: [] } };
+    hintsRevealed: 0, hintOrder: [], board: [], messages: [], usedWords: [], kickVotes: [],
+    settings: { rounds: 3, drawTime: 80, maxPlayers: 12, hints: 2, wordCount: 3, difficulty: 'normal' } };
 }
 export function joinRoom(room, input, now = Date.now()) {
   if (now >= room.expiresAt) fail('This room has expired. Create a new one.');
@@ -31,7 +40,7 @@ export function joinRoom(room, input, now = Date.now()) {
   if (!player) {
     if (room.players.length >= room.settings.maxPlayers) fail('This room is full. Ask the host to increase the limit.');
     player = { id: crypto.randomUUID(), token: crypto.randomUUID(), name: text(input.name, 1, 20, 'Name'),
-      avatar: validAvatar(input.avatar) ? input.avatar : 0, score: 0, connected: true, guessed: false, receipts: [] };
+      avatar: validAvatar(input.avatar) ? input.avatar : 0, score: 0, turnPoints: 0, connected: true, guessed: false, receipts: [] };
     room.players.push(player);
     if (!['lobby', 'finished'].includes(room.phase)) room.order.push(player.id);
     say(room, `${player.name} joined the room.`, now);
@@ -80,7 +89,7 @@ function shuffled(values) {
 }
 function selectWords(room) {
   const builtIn = ({ easy: EASY_WORDS, normal: WORDS, hard: HARD_WORDS })[room.settings.difficulty ?? 'normal'];
-  const all = [...new Set(room.settings.customOnly ? room.settings.customWords : [...builtIn, ...room.settings.customWords])];
+  const all = builtIn;
   const count = room.settings.wordCount ?? 3;
   let pool = all.filter(w => !room.usedWords.includes(w));
   if (pool.length < count) { room.usedWords = []; pool = all; }
@@ -94,7 +103,6 @@ function nextTurn(room, now) {
   room.choices = [];
   room.word = '';
   room.disconnectDeadline = null;
-  for (const p of room.players) p.guessed = false;
   if (room.players.filter(p => p.connected).length < 2) {
     room.phase = 'finished'; room.deadline = null; room.drawerId = null;
     say(room, 'Game finished. Invite a friend to play again.', now); return;
@@ -108,6 +116,7 @@ function nextTurn(room, now) {
     }
     const drawer = room.players.find(p => p.id === room.order[room.turnIndex] && p.connected);
     if (!drawer) continue;
+    for (const p of room.players) { p.guessed = false; p.turnPoints = 0; }
     room.drawerId = drawer.id;
     room.turnId = crypto.randomUUID();
     room.choices = selectWords(room);
@@ -135,6 +144,9 @@ function reveal(room, now, reason = 'Time’s up!') {
 }
 export function tick(room, now = Date.now()) {
   let changed = false;
+  if (room.kickVotes?.some(vote => vote.expiresAt <= now)) {
+    room.kickVotes = room.kickVotes.filter(vote => vote.expiresAt > now); changed = true;
+  }
   if (room.disconnectDeadline && now >= room.disconnectDeadline && ['choosing', 'drawing'].includes(room.phase)) {
     reveal(room, now, 'The drawer couldn’t reconnect.'); return true;
   }
@@ -152,6 +164,7 @@ export function tick(room, now = Date.now()) {
 }
 export function nextAlarm(room, now = Date.now()) {
   const alarms = [room.expiresAt];
+  for (const vote of room.kickVotes ?? []) alarms.push(vote.expiresAt);
   if (room.deadline) alarms.push(room.deadline);
   if (room.disconnectDeadline) alarms.push(room.disconnectDeadline);
   const availableHints = Math.min(room.settings.hints, Math.max(0, room.hintOrder.length - 1));
@@ -175,6 +188,7 @@ export function action(room, playerId, message, now = Date.now()) {
   if (!message || typeof message.id !== 'string' || !/^[a-zA-Z0-9-]{8,64}$/.test(message.id)) fail('Missing command ID.');
   if (player.receipts.includes(message.id)) return { duplicate: true, events: [] };
   const events = [];
+  let feedback;
   const host = () => { if (playerId !== room.ownerId) fail('Only the room host can do that.'); };
   const drawer = () => {
     if (room.phase !== 'drawing' || playerId !== room.drawerId || message.turnId !== room.turnId) fail('It’s not your drawing turn.');
@@ -187,12 +201,8 @@ export function action(room, playerId, message, now = Date.now()) {
       const wordCount = s?.wordCount ?? 3, difficulty = s?.difficulty ?? 'normal';
       if (!s || !integer(s.rounds, 1, 5) || ![30, 60, 80, 120].includes(s.drawTime) ||
         !integer(s.maxPlayers, Math.max(2, room.players.length), 20) || !integer(s.hints, 0, 5) || !integer(wordCount, 1, 5) ||
-        !['easy', 'normal', 'hard'].includes(difficulty) || typeof s.customOnly !== 'boolean') fail('Check your room settings.');
-      const words = typeof s.customWords === 'string' ? s.customWords : '';
-      if (words.length > 4000) fail('Custom words must fit within 4,000 characters.');
-      const customWords = [...new Set(words.split(',').map(w => w.trim()).filter(Boolean))].map(w => text(w, 2, 32, 'Each word'));
-      if (s.customOnly && customWords.length < 5) fail('Add at least 5 different custom words.');
-      room.settings = { rounds: s.rounds, drawTime: s.drawTime, maxPlayers: s.maxPlayers, hints: s.hints, wordCount, difficulty, customOnly: s.customOnly, customWords };
+        !['easy', 'normal', 'hard'].includes(difficulty)) fail('Check your room settings.');
+      room.settings = { rounds: s.rounds, drawTime: s.drawTime, maxPlayers: s.maxPlayers, hints: s.hints, wordCount, difficulty };
       break;
     }
     case 'start':
@@ -210,17 +220,18 @@ export function action(room, playerId, message, now = Date.now()) {
       break;
     case 'chat': {
       const value = text(message.text, 1, 160, 'Message');
-      if (room.phase === 'drawing' && message.turnId !== room.turnId) fail('The turn changed. Try your next guess.');
-      if (room.phase === 'drawing' && (playerId === room.drawerId || player.guessed)) fail('Keep the word a secret until the reveal.');
-      if (room.phase === 'drawing' && normalize(value) === normalize(room.word)) {
+      if (room.phase !== 'drawing' || message.turnId !== room.turnId) fail('The turn changed. Wait for the next drawing to guess.');
+      if (playerId === room.drawerId || player.guessed) fail('Keep the word a secret until the reveal.');
+      if (normalize(value) === normalize(room.word)) {
         player.guessed = true;
         const points = 100 + Math.round(400 * Math.max(0, (room.deadline - now) / (room.settings.drawTime * 1000)));
         player.score += points;
+        player.turnPoints = (player.turnPoints ?? 0) + points;
         const artist = room.players.find(p => p.id === room.drawerId);
-        if (artist) artist.score += 50;
-        say(room, `${player.name} guessed it! +${points} points`, now, null, 'correct', message.id);
+        if (artist) { artist.score += 50; artist.turnPoints = (artist.turnPoints ?? 0) + 50; }
+        say(room, `${player.name} guessed the word!`, now, player, 'correct', message.id);
         if (room.players.filter(p => p.connected && p.id !== room.drawerId).every(p => p.guessed)) reveal(room, now, 'Everyone got it!');
-      } else say(room, value, now, player, 'chat', message.id);
+      } else feedback = closeGuess(value, room.word) ? 'close' : 'miss';
       break;
     }
     case 'stroke': {
@@ -235,20 +246,34 @@ export function action(room, playerId, message, now = Date.now()) {
     }
     case 'undo': drawer(); room.board.pop(); events.push({ type: 'board', turnId: room.turnId, board: room.board }); break;
     case 'clear': drawer(); room.board = []; events.push({ type: 'board', turnId: room.turnId, board: [] }); break;
-    case 'kick': {
-      host();
-      if (message.playerId === playerId) fail('Use Leave room to leave.');
+    case 'voteKick': {
+      if (message.playerId === playerId) fail('You cannot vote to kick yourself.');
       const removed = room.players.find(p => p.id === message.playerId);
       if (!removed) fail('That player already left.');
-      disconnect(room, removed.id, now);
-      room.players = room.players.filter(p => p.id !== removed.id);
-      say(room, `${removed.name} was removed by the host.`, now);
-      events.push({ type: 'removed', playerId: removed.id });
+      room.kickVotes = (room.kickVotes ?? []).filter(vote => vote.expiresAt > now);
+      let vote = room.kickVotes.find(v => v.targetId === removed.id);
+      if (!vote) {
+        const eligible = room.players.filter(p => p.connected && p.id !== removed.id).map(p => p.id);
+        if (eligible.length < 2) fail('Vote-kicking needs at least two other connected players.');
+        vote = { targetId: removed.id, eligible, voters: [], required: Math.max(2, Math.floor(eligible.length / 2) + 1), expiresAt: now + 60_000 };
+        room.kickVotes.push(vote);
+      }
+      if (!vote.eligible.includes(playerId)) fail('Join the next vote after this one expires.');
+      if (!vote.voters.includes(playerId)) vote.voters.push(playerId);
+      if (vote.voters.length >= vote.required) {
+        disconnect(room, removed.id, now);
+        room.players = room.players.filter(p => p.id !== removed.id);
+        clearVotes(room, removed.id);
+        if (room.drawerId === removed.id && ['choosing', 'drawing'].includes(room.phase)) reveal(room, now, 'The drawer was voted out.');
+        else if (room.phase === 'drawing' && room.players.filter(p => p.connected && p.id !== room.drawerId).every(p => p.guessed)) reveal(room, now, 'Everyone got it!');
+        events.push({ type: 'removed', playerId: removed.id });
+      }
       break;
     }
     case 'leave':
       disconnect(room, playerId, now);
       room.players = room.players.filter(p => p.id !== playerId);
+      clearVotes(room, playerId);
       say(room, `${player.name} left the room.`, now);
       break;
     default: fail('Unknown game command.');
@@ -257,7 +282,11 @@ export function action(room, playerId, message, now = Date.now()) {
   player.receipts = player.receipts.slice(-100);
   room.updatedAt = now;
   room.expiresAt = now + ROOM_TTL;
-  return { duplicate: false, events };
+  return { duplicate: false, events, feedback };
+}
+function clearVotes(room, playerId) {
+  room.kickVotes = (room.kickVotes ?? []).filter(vote => vote.targetId !== playerId);
+  for (const vote of room.kickVotes) vote.voters = vote.voters.filter(id => id !== playerId);
 }
 export function view(room, playerId, now = Date.now()) {
   const player = room.players.find(p => p.id === playerId);
@@ -266,12 +295,14 @@ export function view(room, playerId, now = Date.now()) {
   const hints = new Set(room.hintOrder.slice(0, room.hintsRevealed));
   return { code: room.code, phase: room.phase, ownerId: room.ownerId, youId: playerId, round: room.round,
     drawerId: room.drawerId, turnId: room.turnId, deadline: room.deadline, serverNow: now,
-    settings: { wordCount: 3, difficulty: 'normal', ...room.settings, customWords: playerId === room.ownerId ? room.settings.customWords : [] },
+    // Empty legacy fields keep already-open clients usable until they refresh; custom lists are ignored.
+    settings: { rounds: room.settings.rounds, drawTime: room.settings.drawTime, maxPlayers: room.settings.maxPlayers, hints: room.settings.hints, wordCount: room.settings.wordCount ?? 3, difficulty: room.settings.difficulty ?? 'normal', customWords: [], customOnly: false },
     hintsRevealed: room.hintsRevealed,
     hintCount: Math.min(room.settings.hints, Math.max(0, room.hintOrder.length - 1)),
     nextHintAt: room.phase === 'drawing' && room.hintsRevealed < Math.min(room.settings.hints, room.hintOrder.length - 1) ? hintTime(room, room.hintsRevealed + 1) : null,
     word: publicWord ? room.word : '', mask: Array.from(room.word).map((c, i) => /\s/.test(c) ? ' ' : hints.has(i) ? c : '_').join(''),
     choices: isDrawer && room.phase === 'choosing' ? room.choices : [],
-    players: room.players.map(({ id, name, avatar, score, connected, guessed }) => ({ id, name, avatar, score, connected, guessed })),
-    messages: room.messages };
+    players: room.players.map(({ id, name, avatar, score, turnPoints = 0, connected, guessed }) => ({ id, name, avatar, score, turnPoints, connected, guessed })),
+    voteKicks: (room.kickVotes ?? []).filter(v => v.expiresAt > now).map(v => ({ targetId: v.targetId, votes: v.voters.length, required: v.required, voted: v.voters.includes(playerId), eligible: v.eligible.includes(playerId), expiresAt: v.expiresAt })),
+    messages: room.messages.filter(message => message.kind === 'correct') };
 }

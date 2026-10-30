@@ -21,7 +21,7 @@ try {
   for (let r = 0; r < 5; r++) {
     const code = await newRoom();
     const host = await connect(code, { name: `Artist ${r + 1}` }); clients.add(host);
-    await host.command('settings', { settings: { rounds: 1, drawTime: 120, maxPlayers: 20, hints: 2, customOnly: false, customWords: '' } });
+    await host.command('settings', { settings: { rounds: 1, drawTime: 120, maxPlayers: 20, hints: 2, wordCount: 3, difficulty: 'normal' } });
     const guests = await Promise.all(Array.from({ length: 19 }, (_, i) => connect(code, { name: `Friend ${r + 1}-${i + 1}`, avatar: i % 8 })));
     for (const guest of guests) { clients.add(guest); observe(guest); }
     await host.until(m => m.type === 'state' && m.room.players.length === 20);

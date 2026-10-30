@@ -11,8 +11,9 @@ function fixture() {
   const guest = joinRoom(room, { name: 'Friend', avatar: 3 }, 0);
   return { room, host, guest };
 }
-function drawing(f) {
+function drawing(f, word) {
   send(f.room, f.host, 'start');
+  if (word) f.room.choices[0] = word;
   send(f.room, f.host, 'choose', { index: 0 }, 2000);
 }
 const stroke = () => ({ id: crypto.randomUUID(), color: '#252a34', tool: 'pen', size: 4, points: [[10, 20], [100, 200]] });
@@ -40,8 +41,8 @@ test('word count and difficulty select distinct candidates from the requested vo
 
 test('letter hints arrive at server deadlines and expose a countdown without the answer', () => {
   const f = fixture();
-  send(f.room, f.host, 'settings', { settings: { ...f.room.settings, drawTime: 30, customOnly: true, customWords: 'planet,rocket,bridge,guitar,camera' } });
-  drawing(f);
+  send(f.room, f.host, 'settings', { settings: { ...f.room.settings, drawTime: 30 } });
+  drawing(f, 'planet');
   assert.equal(view(f.room, f.guest.id).nextHintAt, 12_000);
   tick(f.room, 11_999); assert.equal(f.room.hintsRevealed, 0);
   tick(f.room, 12_000); assert.equal(f.room.hintsRevealed, 1);
@@ -139,10 +140,10 @@ test('host handoff, explicit leave, and rejoining an empty room work', () => {
   assert.equal(f.room.ownerId, f.host.id);
 });
 
-test('role, stale-turn, custom-word, and malformed-stroke validation protect state', () => {
+test('role, stale-turn, and malformed-stroke validation protect state', () => {
   const f = fixture();
   assert.throws(() => send(f.room, f.guest, 'start'), /host/);
-  assert.throws(() => send(f.room, f.host, 'settings', { settings: { ...f.room.settings, customOnly: true, customWords: 'cat,cat,,, ' } }), /5 different/);
+  assert.throws(() => send(f.room, f.host, 'settings', { settings: { ...f.room.settings, rounds: 99 } }), /settings/);
   drawing(f);
   assert.throws(() => send(f.room, f.guest, 'stroke', { stroke: stroke() }), /not your/);
   assert.throws(() => send(f.room, f.host, 'stroke', { turnId: 'old-turn', stroke: stroke() }), /not your/);
@@ -175,9 +176,86 @@ test('joining mid-game adds the new player to the rotation without leaking the a
 
 test('a short word does not schedule repeated alarms for impossible extra hints', () => {
   const f = fixture();
-  send(f.room, f.host, 'settings', { settings: { ...f.room.settings, hints: 3, customOnly: true, customWords: 'ax,be,do,ex,go' } });
-  drawing(f);
+  send(f.room, f.host, 'settings', { settings: { ...f.room.settings, hints: 3 } });
+  drawing(f, 'ax');
   tick(f.room, 70_000);
   assert.equal(f.room.hintsRevealed, 1);
   assert.equal(nextAlarm(f.room, 70_000), f.room.deadline);
+});
+
+test('wrong guesses stay private and one-letter typos receive private close feedback', () => {
+  const f = fixture(); drawing(f, 'planet');
+  for (const guess of ['planex', 'plane', 'planett', 'palnet']) {
+    const result = send(f.room, f.guest, 'chat', { text: guess }, 3000);
+    assert.equal(result.feedback, 'close');
+    assert.deepEqual(view(f.room, f.host.id).messages, []);
+    assert.ok(!JSON.stringify(view(f.room, f.host.id)).includes(JSON.stringify(guess)));
+  }
+  assert.equal(send(f.room, f.guest, 'chat', { text: '<img src=x onerror=alert(1)>' }, 3000).feedback, 'miss');
+  assert.equal(f.guest.score, 0);
+  send(f.room, f.guest, 'chat', { text: 'PLANET!' }, 4000);
+  const publicMessages = view(f.room, f.host.id).messages;
+  assert.equal(publicMessages.length, 1);
+  assert.equal(publicMessages[0].text, 'Friend guessed the word!');
+  assert.equal(publicMessages[0].kind, 'correct');
+  assert.ok(f.guest.turnPoints > 100);
+  assert.equal(f.host.turnPoints, 50);
+  const restored = JSON.parse(JSON.stringify(f.room));
+  assert.equal(view(restored, f.guest.id).players.find(p => p.id === f.guest.id).turnPoints, f.guest.score);
+  tick(f.room, 10_000);
+  assert.ok(f.room.players.every(p => p.turnPoints === 0));
+});
+
+test('custom-word settings are ignored in new and previously saved rooms', () => {
+  const f = fixture();
+  f.room.settings.customOnly = true; f.room.settings.customWords = ['secretcustomword'];
+  send(f.room, f.host, 'start');
+  assert.ok(!f.room.choices.includes('secretcustomword'));
+  const publicSettings = view(f.room, f.host.id).settings;
+  assert.deepEqual(publicSettings.customWords, []); assert.equal(publicSettings.customOnly, false);
+});
+
+test('the host cannot remove anyone alone and a vote needs two distinct other players', () => {
+  const f = fixture();
+  assert.throws(() => send(f.room, f.host, 'kick', { playerId: f.guest.id }), /Unknown/);
+  assert.throws(() => send(f.room, f.host, 'voteKick', { playerId: f.guest.id }), /two other/);
+  const third = joinRoom(f.room, { name: 'Third' }, 0);
+  assert.throws(() => send(f.room, third, 'voteKick', { playerId: third.id }), /yourself/);
+  const id = crypto.randomUUID();
+  send(f.room, f.host, 'voteKick', { playerId: f.guest.id }, 1000, id);
+  send(f.room, f.host, 'voteKick', { playerId: f.guest.id }, 1001, id);
+  send(f.room, f.host, 'voteKick', { playerId: f.guest.id }, 1002);
+  assert.equal(f.room.players.length, 3);
+  const vote = view(f.room, f.host.id, 1002).voteKicks[0];
+  assert.equal(vote.votes, 1); assert.equal(vote.required, 2); assert.equal(vote.voted, true);
+  const result = send(f.room, third, 'voteKick', { playerId: f.guest.id }, 1003);
+  assert.equal(f.room.players.length, 2);
+  assert.deepEqual(result.events, [{ type: 'removed', playerId: f.guest.id }]);
+  assert.throws(() => joinRoom(f.room, { token: f.guest.token }, 1004), /no longer/);
+});
+
+test('votes survive reconnection, keep a fixed majority, and expire without lowering quorum', () => {
+  const f = fixture();
+  const others = ['Third', 'Fourth', 'Fifth'].map(name => joinRoom(f.room, { name }, 0));
+  send(f.room, f.host, 'voteKick', { playerId: f.guest.id });
+  disconnect(f.room, others[0].id, 2000);
+  assert.equal(view(f.room, f.host.id, 2000).voteKicks[0].required, 3);
+  const late = joinRoom(f.room, { name: 'Late' }, 2000);
+  assert.throws(() => send(f.room, late, 'voteKick', { playerId: f.guest.id }, 2001), /next vote/);
+  const restored = JSON.parse(JSON.stringify(f.room));
+  const returned = joinRoom(restored, { token: f.host.token }, 3000);
+  send(restored, returned, 'voteKick', { playerId: f.guest.id }, 3001);
+  assert.equal(view(restored, returned.id, 3001).voteKicks[0].votes, 1);
+  assert.equal(nextAlarm(restored, 3001), 61_000);
+  tick(restored, 61_000);
+  assert.deepEqual(view(restored, returned.id, 61_000).voteKicks, []);
+});
+
+test('voting out the drawer ends the turn and transfers host without resetting scores', () => {
+  const f = fixture(); const third = joinRoom(f.room, { name: 'Third' }, 0);
+  drawing(f, 'planet'); f.guest.score = 150;
+  send(f.room, f.guest, 'voteKick', { playerId: f.host.id }, 3000);
+  send(f.room, third, 'voteKick', { playerId: f.host.id }, 3001);
+  assert.equal(f.room.phase, 'reveal'); assert.equal(f.room.ownerId, f.guest.id);
+  assert.equal(f.guest.score, 150); assert.equal(f.room.players.length, 2);
 });

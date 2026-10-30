@@ -153,10 +153,10 @@ export class GameRoom extends DurableObject {
         if (!result.duplicate) this.save();
         for (const event of result.events) {
           if (event.type === 'removed') {
-            for (const other of this.ctx.getWebSockets()) if (other.deserializeAttachment()?.playerId === event.playerId) other.close(4003, 'Removed by the host');
+            for (const other of this.ctx.getWebSockets()) if (other.deserializeAttachment()?.playerId === event.playerId) other.close(4003, 'Removed by room vote');
           } else this.broadcast(event);
         }
-        this.send(socket, { type: 'ack', id: message.id });
+        this.send(socket, { type: 'ack', id: message.id, feedback: result.feedback });
         if (!['stroke', 'undo', 'clear'].includes(message.type) && !result.duplicate) this.states();
         if (message.type === 'leave') socket.close(4002, 'Left the room');
       }

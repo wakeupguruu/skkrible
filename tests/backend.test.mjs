@@ -65,3 +65,38 @@ test('a repeated drawing command is acknowledged without duplicating the board',
   const snapshot = await host.until(m => m.type === 'snapshot');
   assert.equal(snapshot.board.length, 1);
 });
+
+test('guess feedback stays on the sender socket and removal needs a room vote', async t => {
+  const code = await newRoom();
+  const host = await connect(code, { name: 'Artist' });
+  const guest = await connect(code, { name: 'Guesser' });
+  const third = await connect(code, { name: 'Third' });
+  t.after(() => { host.close(); guest.close(); third.close(); });
+  await host.command('start');
+  const choosing = await host.until(m => m.type === 'state' && m.room.phase === 'choosing');
+  const turnId = choosing.room.turnId;
+  await host.command('choose', { turnId, index: 0 });
+  const drawing = await host.until(m => m.type === 'state' && m.room.phase === 'drawing');
+  const word = drawing.room.word;
+  const close = word.slice(0, -1) + (word.at(-1) === 'x' ? 'z' : 'x');
+  const guessId = await guest.command('chat', { turnId, text: close });
+  assert.equal((await guest.until(m => m.type === 'ack' && m.id === guessId)).feedback, 'close');
+  third.socket.send(JSON.stringify({ type: 'sync' }));
+  assert.deepEqual((await third.until(m => m.type === 'snapshot')).room.messages, []);
+  assert.ok(!third.messages.some(m => m.id === guessId || m.feedback));
+  await guest.command('chat', { turnId, text: word });
+  const correct = await third.until(m => m.type === 'state' && m.room.messages.length === 1);
+  assert.equal(correct.room.messages[0].text, 'Guesser guessed the word!');
+  assert.ok(correct.room.players.find(p => p.id === guest.welcome.room.youId).turnPoints > 100);
+  const rejectedId = crypto.randomUUID();
+  host.socket.send(JSON.stringify({ type: 'kick', id: rejectedId, playerId: third.welcome.room.youId }));
+  await host.until(m => m.type === 'error' && m.id === rejectedId);
+  await host.command('voteKick', { playerId: third.welcome.room.youId });
+  const voting = await guest.until(m => m.type === 'state' && m.room.voteKicks[0]?.votes === 1);
+  assert.equal(voting.room.players.length, 3);
+  const closed = new Promise(resolve => third.socket.once('close', (code, reason) => resolve({ code, reason: reason.toString() })));
+  await guest.command('voteKick', { playerId: third.welcome.room.youId });
+  assert.deepEqual(await closed, { code: 4003, reason: 'Removed by room vote' });
+  const reveal = await host.until(m => m.type === 'state' && m.room.phase === 'reveal');
+  assert.equal(reveal.room.players.length, 2);
+});
