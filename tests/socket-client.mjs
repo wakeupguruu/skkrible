@@ -2,7 +2,7 @@ import WebSocket from 'ws';
 import assert from 'node:assert/strict';
 
 export const BACKEND = process.env.TEST_BACKEND_URL ?? 'http://127.0.0.1:8787';
-export const ORIGIN = 'http://127.0.0.1:5173';
+export const ORIGIN = process.env.TEST_ORIGIN ?? 'http://127.0.0.1:5173';
 export async function newRoom() {
   const response = await fetch(`${BACKEND}/api/rooms`, { method: 'POST', headers: { Origin: ORIGIN } });
   assert.equal(response.status, 201, await response.clone().text());
