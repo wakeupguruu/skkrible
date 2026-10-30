@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRoom, joinRoom, disconnect, action, tick, nextAlarm, view, validateStroke, ROOM_TTL } from '../apps/backend/game.mjs';
+import { EASY_WORDS, HARD_WORDS } from '../apps/backend/words.mjs';
+import { validAvatar, encodeAvatar, decodeAvatar } from '../apps/shared/avatar.mjs';
 
 const send = (r, p, type, extra = {}, now = 1000, id = crypto.randomUUID()) => action(r, p.id, { id, type, turnId: r.turnId, ...extra }, now);
 function fixture() {
@@ -14,6 +16,51 @@ function drawing(f) {
   send(f.room, f.host, 'choose', { index: 0 }, 2000);
 }
 const stroke = () => ({ id: crypto.randomUUID(), color: '#252a34', tool: 'pen', size: 4, points: [[10, 20], [100, 200]] });
+
+test('word count and difficulty select distinct candidates from the requested vocabulary', () => {
+  for (const [difficulty, vocabulary] of [['easy', EASY_WORDS], ['hard', HARD_WORDS]]) {
+    for (const wordCount of [1, 5]) {
+      const f = fixture();
+      send(f.room, f.host, 'settings', { settings: { ...f.room.settings, wordCount, difficulty, customWords: '' } });
+      send(f.room, f.host, 'start');
+      assert.equal(new Set(f.room.choices).size, wordCount);
+      assert.ok(f.room.choices.every(word => vocabulary.includes(word)));
+      assert.deepEqual(view(f.room, f.guest.id).choices, []);
+    }
+  }
+  const f = fixture();
+  for (const settings of [{ wordCount: 6 }, { difficulty: 'unknown' }, { hints: 6 }]) {
+    assert.throws(() => send(f.room, f.host, 'settings', { settings: { ...f.room.settings, ...settings } }), /settings/);
+  }
+  delete f.room.settings.wordCount; delete f.room.settings.difficulty;
+  send(f.room, f.host, 'start');
+  assert.equal(f.room.choices.length, 3);
+  assert.equal(view(f.room, f.host.id).settings.difficulty, 'normal');
+});
+
+test('letter hints arrive at server deadlines and expose a countdown without the answer', () => {
+  const f = fixture();
+  send(f.room, f.host, 'settings', { settings: { ...f.room.settings, drawTime: 30, customOnly: true, customWords: 'planet,rocket,bridge,guitar,camera' } });
+  drawing(f);
+  assert.equal(view(f.room, f.guest.id).nextHintAt, 12_000);
+  tick(f.room, 11_999); assert.equal(f.room.hintsRevealed, 0);
+  tick(f.room, 12_000); assert.equal(f.room.hintsRevealed, 1);
+  assert.equal(nextAlarm(f.room, 12_000), 22_000);
+  assert.equal(view(f.room, f.guest.id).mask.replace(/_/g, '').length, 1);
+  assert.equal(view(f.room, f.guest.id).word, '');
+  tick(f.room, 22_000); assert.equal(f.room.hintsRevealed, 2);
+  assert.equal(view(f.room, f.guest.id).nextHintAt, null);
+  const off = fixture(); off.room.settings.hints = 0; drawing(off);
+  assert.equal(view(off.room, off.guest.id).nextHintAt, null);
+});
+
+test('all 800 avatar combinations survive storage and malformed identifiers stay bounded', () => {
+  for (let id = 0; id < 800; id++) assert.equal(encodeAvatar(decodeAvatar(id)), id);
+  for (const bad of [-1, 800, 1.5, '<svg>', null]) assert.equal(validAvatar(bad), false);
+  const f = fixture(); const player = joinRoom(f.room, { name: 'Custom face', avatar: 799 }, 0);
+  assert.equal(view(JSON.parse(JSON.stringify(f.room)), player.id).players.at(-1).avatar, 799);
+  assert.throws(() => encodeAvatar({ color: 8 }), /Invalid/);
+});
 
 test('private words and resume credentials never appear in another player’s view', () => {
   const f = fixture();

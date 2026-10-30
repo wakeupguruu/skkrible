@@ -1,4 +1,5 @@
-import { WORDS } from './words.mjs';
+import { WORDS, EASY_WORDS, HARD_WORDS } from './words.mjs';
+import { validAvatar } from '../shared/avatar.mjs';
 
 export const ROOM_TTL = 24 * 60 * 60 * 1000;
 export const PALETTE = ['#252a34', '#ffffff', '#868e96', '#f03e3e', '#f76707', '#fcc419', '#40c057', '#12b886', '#15aabf', '#228be6', '#7950f2', '#be4bdb', '#f06595', '#a66b46'];
@@ -21,7 +22,7 @@ export function createRoom(code, now = Date.now()) {
     phase: 'lobby', round: 0, turnIndex: -1, order: [], drawerId: null, turnId: null, word: '', choices: [],
     deadline: null, drawingStartedAt: null, disconnectDeadline: null, pausedPhase: null, remaining: 0,
     hintsRevealed: 0, hintOrder: [], board: [], messages: [], usedWords: [],
-    settings: { rounds: 3, drawTime: 80, maxPlayers: 12, hints: 2, customOnly: false, customWords: [] } };
+    settings: { rounds: 3, drawTime: 80, maxPlayers: 12, hints: 2, wordCount: 3, difficulty: 'normal', customOnly: false, customWords: [] } };
 }
 export function joinRoom(room, input, now = Date.now()) {
   if (now >= room.expiresAt) fail('This room has expired. Create a new one.');
@@ -30,7 +31,7 @@ export function joinRoom(room, input, now = Date.now()) {
   if (!player) {
     if (room.players.length >= room.settings.maxPlayers) fail('This room is full. Ask the host to increase the limit.');
     player = { id: crypto.randomUUID(), token: crypto.randomUUID(), name: text(input.name, 1, 20, 'Name'),
-      avatar: integer(input.avatar, 0, 7) ? input.avatar : 0, score: 0, connected: true, guessed: false, receipts: [] };
+      avatar: validAvatar(input.avatar) ? input.avatar : 0, score: 0, connected: true, guessed: false, receipts: [] };
     room.players.push(player);
     if (!['lobby', 'finished'].includes(room.phase)) room.order.push(player.id);
     say(room, `${player.name} joined the room.`, now);
@@ -78,10 +79,15 @@ function shuffled(values) {
   return result;
 }
 function selectWords(room) {
-  let pool = room.settings.customOnly ? room.settings.customWords : [...WORDS, ...room.settings.customWords];
-  pool = [...new Set(pool)].filter(w => !room.usedWords.includes(w));
-  if (pool.length < 3) { room.usedWords = []; pool = room.settings.customOnly ? room.settings.customWords : [...WORDS, ...room.settings.customWords]; }
-  return shuffled(pool).slice(0, 3);
+  const builtIn = ({ easy: EASY_WORDS, normal: WORDS, hard: HARD_WORDS })[room.settings.difficulty ?? 'normal'];
+  const all = [...new Set(room.settings.customOnly ? room.settings.customWords : [...builtIn, ...room.settings.customWords])];
+  const count = room.settings.wordCount ?? 3;
+  let pool = all.filter(w => !room.usedWords.includes(w));
+  if (pool.length < count) { room.usedWords = []; pool = all; }
+  return shuffled(pool).slice(0, count);
+}
+function hintTime(room, index) {
+  return room.drawingStartedAt + room.settings.drawTime * 1000 * index / (room.settings.hints + 1);
 }
 function nextTurn(room, now) {
   room.board = [];
@@ -133,9 +139,8 @@ export function tick(room, now = Date.now()) {
     reveal(room, now, 'The drawer couldn’t reconnect.'); return true;
   }
   if (room.phase === 'drawing') {
-    const elapsed = (now - room.drawingStartedAt) / (room.settings.drawTime * 1000);
     const hints = Math.min(room.settings.hints, room.hintOrder.length - 1,
-      Math.max(0, Math.floor((elapsed - 0.4) / 0.5 * room.settings.hints)));
+      Math.max(0, Math.floor((now - room.drawingStartedAt) / (room.settings.drawTime * 1000) * (room.settings.hints + 1))));
     if (hints > room.hintsRevealed) { room.hintsRevealed = hints; changed = true; }
   }
   if (!room.deadline || now < room.deadline) return changed;
@@ -151,7 +156,7 @@ export function nextAlarm(room, now = Date.now()) {
   if (room.disconnectDeadline) alarms.push(room.disconnectDeadline);
   const availableHints = Math.min(room.settings.hints, Math.max(0, room.hintOrder.length - 1));
   if (room.phase === 'drawing' && availableHints > room.hintsRevealed) {
-    alarms.push(room.drawingStartedAt + room.settings.drawTime * 1000 * (0.4 + 0.5 * (room.hintsRevealed + 1) / room.settings.hints));
+    alarms.push(hintTime(room, room.hintsRevealed + 1));
   }
   return Math.max(now + 100, Math.min(...alarms));
 }
@@ -179,13 +184,15 @@ export function action(room, playerId, message, now = Date.now()) {
       host();
       if (!['lobby', 'finished'].includes(room.phase)) fail('Change settings between games.');
       const s = message.settings;
+      const wordCount = s?.wordCount ?? 3, difficulty = s?.difficulty ?? 'normal';
       if (!s || !integer(s.rounds, 1, 5) || ![30, 60, 80, 120].includes(s.drawTime) ||
-        !integer(s.maxPlayers, Math.max(2, room.players.length), 20) || !integer(s.hints, 0, 3) || typeof s.customOnly !== 'boolean') fail('Check your room settings.');
+        !integer(s.maxPlayers, Math.max(2, room.players.length), 20) || !integer(s.hints, 0, 5) || !integer(wordCount, 1, 5) ||
+        !['easy', 'normal', 'hard'].includes(difficulty) || typeof s.customOnly !== 'boolean') fail('Check your room settings.');
       const words = typeof s.customWords === 'string' ? s.customWords : '';
       if (words.length > 4000) fail('Custom words must fit within 4,000 characters.');
       const customWords = [...new Set(words.split(',').map(w => w.trim()).filter(Boolean))].map(w => text(w, 2, 32, 'Each word'));
       if (s.customOnly && customWords.length < 5) fail('Add at least 5 different custom words.');
-      room.settings = { rounds: s.rounds, drawTime: s.drawTime, maxPlayers: s.maxPlayers, hints: s.hints, customOnly: s.customOnly, customWords };
+      room.settings = { rounds: s.rounds, drawTime: s.drawTime, maxPlayers: s.maxPlayers, hints: s.hints, wordCount, difficulty, customOnly: s.customOnly, customWords };
       break;
     }
     case 'start':
@@ -259,7 +266,10 @@ export function view(room, playerId, now = Date.now()) {
   const hints = new Set(room.hintOrder.slice(0, room.hintsRevealed));
   return { code: room.code, phase: room.phase, ownerId: room.ownerId, youId: playerId, round: room.round,
     drawerId: room.drawerId, turnId: room.turnId, deadline: room.deadline, serverNow: now,
-    settings: { ...room.settings, customWords: playerId === room.ownerId ? room.settings.customWords : [] },
+    settings: { wordCount: 3, difficulty: 'normal', ...room.settings, customWords: playerId === room.ownerId ? room.settings.customWords : [] },
+    hintsRevealed: room.hintsRevealed,
+    hintCount: Math.min(room.settings.hints, Math.max(0, room.hintOrder.length - 1)),
+    nextHintAt: room.phase === 'drawing' && room.hintsRevealed < Math.min(room.settings.hints, room.hintOrder.length - 1) ? hintTime(room, room.hintsRevealed + 1) : null,
     word: publicWord ? room.word : '', mask: Array.from(room.word).map((c, i) => /\s/.test(c) ? ' ' : hints.has(i) ? c : '_').join(''),
     choices: isDrawer && room.phase === 'choosing' ? room.choices : [],
     players: room.players.map(({ id, name, avatar, score, connected, guessed }) => ({ id, name, avatar, score, connected, guessed })),
