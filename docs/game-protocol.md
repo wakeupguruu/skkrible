@@ -4,6 +4,10 @@ The first version targets about 100 simultaneous friends across private rooms, w
 
 The server owns turns, words, hints, deadlines, and scores. Correct guesses earn 100–500 points based on remaining server time; each correct guess earns the drawer 50 points. The browser never receives other players' resume credentials or the answer before guessing/reveal. These are our game's rules, not a claim about skribbl.io's scoring.
 
+The host chooses 1–5 candidate words, a built-in difficulty pool (`easy`, `normal`, `hard`), and 0–5 letter hints. Custom-only lists override built-in difficulty. Hints arrive at fractions `i / (hints + 1)` of the drawing duration, capped so the final non-space character remains hidden. Views expose `hintsRevealed`, `hintCount`, and `nextHintAt` for countdown display. Legacy rooms/clients default to three choices and normal difficulty.
+
+Avatars are bounded integer IDs 0–799 encoding eight colors, five eye styles, five mouths, and four accessories. The shared codec validates the representation; browser-generated SVG uses only local fixed markup and palette values. Existing IDs 0–7 remain valid.
+
 Commands have a random `id`, a `type`, and, for turn-specific actions, a `turnId`. The server retains recent command receipts so replaying an acknowledged or uncertain command cannot double-score or duplicate a drawing. A completed stroke also has its own ID, making stroke retries independent of the receipt window. The client must not carry unsent strokes into another turn.
 
 Commands: `settings`, `start`, `choose`, `chat`, `stroke`, `undo`, `clear`, `kick`, and `leave`. Live ink previews will be transient; completed strokes and game state will be durable before acknowledgement. State views and drawing data are separate, so ordinary score/chat updates do not retransmit the whole board. Snapshots contain the complete committed drawing for resynchronization.

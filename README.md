@@ -1,6 +1,6 @@
 # Skkrible
 
-A friends-only drawing and guessing game. Make a private room, send the invite, and take turns drawing. The interface uses an original paper-and-ink design, with 18px chat and a compact mobile guessing layout.
+A friends-only drawing and guessing game. Make a private room, send the invite, and take turns drawing. The compact blue interface keeps the board, room controls, players, and 18px chat within one screen on phones and laptops. Chat and player lists scroll internally.
 
 ## Run locally
 
@@ -18,6 +18,9 @@ Open http://127.0.0.1:5173. Open another browser profile or private window to jo
 ## What works
 
 - Private invite links and 2–20 player rooms, with avatars and host settings.
+- A face builder with 800 color/eyes/mouth/accessory combinations, saved in your browser.
+- Room controls directly in the canvas area: rounds, drawing time, 1–5 word choices, easy/normal/hard vocabulary, 0–5 letter hints, and custom words. Starting saves the visible settings first.
+- A countdown ring, urgency animation, turn progress, word length, and next-letter-hint countdown. Letter hints arrive at evenly spaced server deadlines; at least one letter stays hidden.
 - Turn-based word selection, hints, server-owned scoring, custom words, and results.
 - Mouse, pen, and touch drawing; colors, sizes, eraser, undo, and clear.
 - Live ink previews and durable completed strokes.
